@@ -4,6 +4,9 @@ about: Proponha uma nova funcionalidade
 
 ---
 
+**Requisitos**
+Outras issues pré-requisito.
+
 **Descrição**
 O que deve acontecer.
 
