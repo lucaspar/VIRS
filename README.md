@@ -6,7 +6,7 @@ Construído com o Web Framework Django. Pronto para rodar com Docker.
 
 ### Execução
 
-**1. Terminal 1 - executar serviço**
+**1. Terminal 1 - executar containers**
 ```bash
 docker-compose up
 ```
@@ -22,11 +22,39 @@ docker-compose run web bash
 
 **3. Acessar página em localhost:8000**
 
-### Extras
+### Outros procedimentos
+
+##### Reiniciar containers
+```bash
+docker-compose down
+docker-compose up
+```
+
+##### Database wipe
+```bash
+docker-compose down
+mv postgres-data postgres-data.backup
+# neste ponto é necessário re-executar as migrações
+# para executar o projeto novamente
+```
+
+##### Executar migrações
+```bash
+# com os containers rodando, executar:
+docker-compose run web bash
+./manage.py makemigrations
+./manage.py migrate
+```
+
+##### Finalizar
+```bash
+docker-compose down
+```
 
 ##### Criar django superuser
 
 ```bash
 docker-compose run web bash
 ./manage.py createsuperuser
+# logar como admin em localhost:8000/admin
 ```
