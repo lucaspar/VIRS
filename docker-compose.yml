@@ -12,6 +12,3 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    # environment:
-    #   - PYTHONPATH=/virs
-    #   - DJANGO_SETTINGS_MODULE=virs
