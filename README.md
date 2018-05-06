@@ -21,3 +21,12 @@ docker-compose run web bash
 ```
 
 **3. Acessar página em localhost:8000**
+
+### Extras
+
+##### Criar django superuser
+
+```bash
+docker-compose run web bash
+./manage.py createsuperuser
+```
