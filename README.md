@@ -2,33 +2,72 @@ VIRS
 ===
 **_Visualization and Information Retrieval System_**
 
----
+Construído com o Web Framework Django. Pronto para rodar com Docker.
 
-### Arquitetura
+### Execução
 
-Baseado no Web Framework Django.
+#### 1. Terminal 1 - executar containers
+```bash
+docker-compose up
+```
 
+#### 2. Terminal 2 - executar shell interativo
 
-### Implementação e apresentação
+```bash
+docker-compose run web bash
 
-Implementação de um sistema de recuperação de informações baseado no modelo vetorial. A aplicação possui quatro objetivos principais que serão avaliados separadamente:
+# executar migrações
+./manage.py makemigrations
+./manage.py migrate
+```
 
-- **50% da nota:** Montar índice baseado em arquivo invertido;
-- **25% da nota:** Representar cada documento no modelo vetorial;
-- **20% da nota:** Calcular a similaridade entre consulta e documentos;
-- **5% da nota:** Mostrar ranking ordenado conforme a similaridade calculada.
+#### 3. Acessar página em localhost:8000
 
-### Observações:
+### Outros procedimentos
 
-- Até trios.
-- Apresentação em aula.
-- Código organizado e documentado.
-- Cada TAD (consulta, documento, índice e ranking de documentos) e componente (pré-processamento, indexação, busca e ranking) implementado separadamente utilizando classes / módulos distintos.
-- Implementação de uma interface (GUI ou CLI) p/ escolher a coleção e realizadas as consultas.
-- Podem ser utilizados quaisquer pacotes, APIs ou bibliotecas que implementem parte do problema.
+##### Reiniciar containers
 
-### Entregáveis:
+```bash
+docker-compose down
+docker-compose up
+```
 
-- Código fonte
-- Bibliotecas externas
-- Executáveis
+##### Database wipe
+
+```bash
+docker-compose down
+mv postgres-data postgres-data.backup
+# neste ponto é necessário re-executar as migrações
+# para executar o projeto novamente
+```
+
+##### Executar migrações
+
+```bash
+# com os containers rodando, executar:
+docker-compose run web bash
+./manage.py makemigrations
+./manage.py migrate
+```
+
+##### Finalizar
+
+```bash
+docker-compose down
+```
+
+##### Criar django superuser
+
+```bash
+docker-compose run web bash
+./manage.py createsuperuser
+# logar como admin em localhost:8000/admin
+```
+
+##### Redefinir permissões para usuário local
+
+```bash
+pwd
+# confirme 3x que está na raiz do projeto
+sudo chown $USER:$USER -R .
+```
