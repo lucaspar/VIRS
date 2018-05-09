@@ -1,12 +1,20 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-import vsm.collection as collection
+from vsm.collection import Collection
 
 def home(request):
-    template = loader.get_template('vsm/index.html')
+
+    # load collection
+    col = Collection("/virs/collection/")
+    tokens = col.loadCollection()
+
     context = {
         'section_title': 'VIRS - Visualization and Information Retrieval System',
-        'aux' : collection.getAllTokensFrom("/virs/collection/")
+        'tokens' : tokens,
     }
+
+    # load template
+    template = loader.get_template('vsm/index.html')
+
     return HttpResponse(template.render(context, request))
