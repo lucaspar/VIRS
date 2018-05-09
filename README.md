@@ -64,6 +64,15 @@ docker-compose run web bash
 # logar como admin em localhost:8000/admin
 ```
 
+##### Rebuild
+
+```bash
+docker-compose down
+sudo mv postgres-data postgres-data.backup
+docker-compose build
+docker-compose up
+```
+
 ##### Redefinir permissões para usuário local
 
 ```bash
