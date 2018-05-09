@@ -1,2 +1,9 @@
 <h1>{{ section_title }}</h1>
-<p>{{ aux }}</p>
+<table>
+    <th>Tokens</th>
+    {% for token in tokens %}
+    <tr>
+        <td style="margin: 0; padding: 8px; border:1px solid #aaa;">{{ token }}</td>
+    </tr>
+    {% endfor %}
+</table>

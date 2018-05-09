@@ -3,32 +3,50 @@ import re
 import nltk
 from unicodedata import normalize
 
-def getTXTsFromPath(path):
-    files  = os.listdir(path)
-    txts = [_file for _file in files if _file.lower().endswith(".txt")]
-    return txts
+# Methods to process a collection of documents
+class Collection(object):
 
-def getTokensFor(path,txt):
-    _file = open(path + txt, 'r')
-    lines = _file.readlines()
-    fileWords = []
-    for line in lines :
-        line = line.lower()
-        words = re.findall(r"[\w']+", line)
-        for word in words :
-            word = normalize('NFKD', word).encode('ASCII', 'ignore').decode('ASCII')
-            fileWords.append(word)
-    _file.close()
-    nltk.download('stopwords')
-    stopwords_ = nltk.corpus.stopwords.words('portuguese')
-    fileWords = [x for x in fileWords if x not in stopwords_]
-    return fileWords
+    def __init__(self, collection_path):
+        self.collection_path = collection_path
+        self.filelist = self.getFileList()
+        nltk.download('stopwords')  # download nltk data
 
-def getAllTokensFrom(path):
-    tokens = []
-    files = getTXTsFromPath(path)
-    for _file in files :
-        words = getTokensFor(path,_file)
-        for word in words :
-            tokens.append(word)
-    return tokens
+
+    # Get a file list from @path with extension @ext
+    def getFileList(self, ext='txt'):
+        files  = os.listdir(self.collection_path)
+        txts = [_file for _file in files if _file.endswith("." + ext)]
+        return txts
+
+
+    # Process content of @filepath
+    def processTokens(self, filepath):
+
+        # read file content
+        with open(filepath, 'r') as _file:
+            lines = _file.readlines()
+
+        tokens = []
+        for line in lines :
+            line = line.lower()                     # lowercase
+            words = re.findall(r"[\w']+", line)     # filter non-alphanumeric characters
+            for word in words :
+                # normalize by removing diacritics:
+                word = normalize('NFKD', word).encode('ASCII', 'ignore').decode('ASCII')
+                tokens.append(word)
+
+        # remove stopwords
+        stopwords_list = nltk.corpus.stopwords.words('portuguese')
+        tokens = [x for x in tokens if x not in stopwords_list]
+
+        return tokens
+
+
+    # Load collection of documents given a file @path
+    def loadCollection(self):
+        tokens = []
+        for filename in self.filelist :
+            wordlist = self.processTokens(self.collection_path + filename)
+            for word in wordlist :
+                tokens.append(word)
+        return tokens
