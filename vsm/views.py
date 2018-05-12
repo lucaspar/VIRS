@@ -3,9 +3,6 @@ from django.template import loader
 from django.shortcuts import render
 from cop.invertedIndex import InvertedIndex
 
-# from somewhere import handle_uploaded_file
-from .forms import UploadFileForm
-
 def home(request):
 
     # load collection
@@ -20,6 +17,7 @@ def home(request):
     template = loader.get_template('index.html')
 
     return HttpResponse(template.render(context, request))
+  
 
 def upload(request):
     #Codigo que funciona quando poe localhost:8000/upload
@@ -48,5 +46,6 @@ def upload(request):
 
     # template = loader.get_template('vsm/upload.html')
     # return HttpResponse(template.render(request))
+
 
 
