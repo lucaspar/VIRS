@@ -1,14 +1,13 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-from vsm.collection import Collection
+from vsm.invertedIndex import InvertedIndex
 
 def home(request):
 
     # load collection
-    col = Collection("/virs/collection/")
-    tokens = col.loadCollection()
-
+    ii = InvertedIndex("/virs/collection/")
+    tokens = ii.collectionCountTokens()
     context = {
         'section_title': 'VIRS - Visualization and Information Retrieval System',
         'tokens' : tokens,
