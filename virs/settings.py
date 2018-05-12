@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'vsm',
+    'cop',      # collection processing
+    'vsm',      # vector space model application
 ]
 
 MIDDLEWARE = [

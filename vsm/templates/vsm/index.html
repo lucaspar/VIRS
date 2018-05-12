@@ -1,9 +1,19 @@
 <h1>{{ section_title }}</h1>
 <table>
-    <th>Tokens</th>
-    {% for token in tokens %}
     <tr>
-        <td style="margin: 0; padding: 8px; border:1px solid #aaa;">{{ token }}</td>
+        <th>Tokens</th>
+        <th>Documentos e Frequência</th>
+    </tr>
+    {% for token, values in tokens.items %}
+    <tr>
+        <td>{{ token }}</td>
+        <td>
+        {% for value in values %}
+            <span> ---
+                {{ value.0 }} , {{ value.1 }}
+            </span>
+        {% endfor %}
+        </td>
     </tr>
     {% endfor %}
 </table>

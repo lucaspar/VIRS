@@ -1,16 +1,16 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-from vsm.collection import Collection
-from .forms import UploadFileForm
+from cop.invertedIndex import InvertedIndex
+
 # from somewhere import handle_uploaded_file
+from .forms import UploadFileForm
 
 def home(request):
 
     # load collection
-    col = Collection("/virs/collection/")
-    tokens = col.loadCollection()
-
+    ii = InvertedIndex("/virs/collection/")
+    tokens = ii.collectionPostingsList()
     context = {
         'section_title': 'VIRS - Visualization and Information Retrieval System',
         'tokens' : tokens,
