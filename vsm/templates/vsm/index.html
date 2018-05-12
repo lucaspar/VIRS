@@ -2,14 +2,14 @@
 <table>
     <tr>
         <th>Tokens</th>
-        <th>Documentos e Frequência</th> 
+        <th>Documentos e Frequência</th>
     </tr>
     {% for token, values in tokens.items %}
     <tr>
         <td>{{ token }}</td>
         <td>
         {% for value in values %}
-            <span> --- 
+            <span> ---
                 {{ value.0 }} , {{ value.1 }}
             </span>
         {% endfor %}

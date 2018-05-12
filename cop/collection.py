@@ -19,7 +19,7 @@ class Collection(object):
         return txts
 
 
-    # Process content of @filepath
+    # Process content of @filepath returning its tokens
     def processTokens(self, filepath):
 
         # read file content
