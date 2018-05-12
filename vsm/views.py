@@ -17,14 +17,14 @@ def home(request):
     }
 
     # load template
-    template = loader.get_template('vsm/index.html')
+    template = loader.get_template('index.html')
 
     return HttpResponse(template.render(context, request))
 
 def upload(request):
     #Codigo que funciona quando poe localhost:8000/upload
-    col = Collection("/virs/collection/")
-    tokens = col.loadCollection()
+    col = InvertedIndex("/virs/collection/")
+    tokens = col.collectionPostingsList()
 
     context = {
         'section_title': 'VIRS - Visualization and Information Retrieval System',
@@ -32,10 +32,10 @@ def upload(request):
     }
 
     # load template
-    template = loader.get_template('vsm/upload.html')
+    template = loader.get_template('upload.html')
 
     return HttpResponse(template.render(context, request))
-    
+
     #Do exemplo
     # if request.method == 'POST':
     #     form = UploadFileForm(request.POST, request.FILES)
