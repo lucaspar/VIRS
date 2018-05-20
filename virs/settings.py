@@ -133,3 +133,6 @@ STATIC_URL = '/static/'
 # Upload locations
 UPLOADS = os.path.join(BASE_DIR, 'uploads/')
 COLLECTION_UPLOADS = os.path.join(UPLOADS, 'collections')
+
+# Google reCAPTCHA secret key
+GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf0VVoUAAAAAL2OHFc8WxCU75oR9hcYHMSzwv7c'
