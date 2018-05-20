@@ -9,14 +9,23 @@ class Collection(object):
     def __init__(self, collection_path):
         self.collection_path = collection_path
         self.filelist = self.getFileList()
-        nltk.download('stopwords')  # download nltk data
 
+        # Attempts to get stopwords
+        try:
+            nltk.data.find('corpora/stopwords')
+
+        # Download stopwords
+        except LookupError:
+            NLTK_DATA_PATH = '/virs/.app_data/nltk_data'
+            if not any(NLTK_DATA_PATH in p for p in nltk.data.path):
+                nltk.data.path.append(NLTK_DATA_PATH)
+            nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
 
     # Get a file list from @path with extension @ext
     def getFileList(self, ext='txt'):
         files  = os.listdir(self.collection_path)
-        txts = [_file for _file in files if _file.endswith("." + ext)]
-        return txts
+        texts = [_file for _file in files if _file.endswith("." + ext)]
+        return texts
 
 
     # Process content of @filepath returning its tokens

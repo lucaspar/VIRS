@@ -129,3 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Upload locations
+UPLOADS = os.path.join(BASE_DIR, 'uploads/')
+COLLECTION_UPLOADS = os.path.join(UPLOADS, 'collections')

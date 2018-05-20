@@ -37,7 +37,6 @@ docker-compose up
 ```bash
 docker-compose down
 mv postgres-data postgres-data.backup
-# re-executar as migrações também
 ```
 
 ##### Executar migrações
@@ -67,10 +66,9 @@ docker-compose run web bash
 
 ```bash
 docker-compose down
-sudo mv postgres-data postgres-data.backup
+sudo mv .db .db.backup
 docker-compose build
 docker-compose up
-# re-executar as migrações também
 ```
 
 ##### Redefinir permissões para usuário local
