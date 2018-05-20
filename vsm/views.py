@@ -1,8 +1,12 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.template import loader
-from django.shortcuts import render
-from cop.invertedIndex import InvertedIndex
 
+from cop.invertedIndex import InvertedIndex
+from .storage import handle_uploaded_file
+from .forms import UploadFileForm
+
+# Home view
 def home(request):
 
     # load collection
@@ -17,35 +21,19 @@ def home(request):
     template = loader.get_template('index.html')
 
     return HttpResponse(template.render(context, request))
-  
 
+# Upload view (GET and POST)
 def upload(request):
-    #Codigo que funciona quando poe localhost:8000/upload
-    col = InvertedIndex("/virs/collection/")
-    tokens = col.collectionPostingsList()
 
-    context = {
-        'section_title': 'VIRS - Visualization and Information Retrieval System',
-        'tokens' : tokens,
-    }
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
 
-    # load template
-    template = loader.get_template('upload.html')
+            for f in request.FILES.getlist('files'):
+                handle_uploaded_file(f)
 
-    return HttpResponse(template.render(context, request))
+            return redirect('home')
+    else:
+        form = UploadFileForm()
 
-    #Do exemplo
-    # if request.method == 'POST':
-    #     form = UploadFileForm(request.POST, request.FILES)
-    #     if form.is_valid():
-    #         handle_uploaded_file(request.FILES['file'])
-    #         return HttpResponseRedirect('/success/url/')
-    # else:
-    #     form = UploadFileForm()
-    # return render(request, 'upload.html', {'form': form})
-
-    # template = loader.get_template('vsm/upload.html')
-    # return HttpResponse(template.render(request))
-
-
-
+    return render(request, 'upload.html', {'form': form})
