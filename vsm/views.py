@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.template import loader
 
 from cop.invertedIndex import InvertedIndex
-from .storage import handle_uploaded_file
+from .storage import handle_uploaded_files
 from .forms import UploadFileForm
 
 # Home view
@@ -28,10 +28,7 @@ def upload(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-
-            for f in request.FILES.getlist('files'):
-                handle_uploaded_file(f)
-
+            handle_uploaded_files(request.FILES.getlist('files'))
             return redirect('home')
     else:
         form = UploadFileForm()
