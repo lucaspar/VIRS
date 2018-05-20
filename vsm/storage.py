@@ -6,9 +6,9 @@ import time
 import os
 
 # Handler for a collection upload
-def handle_uploaded_files(file_list):
+def handle_uploaded_files(file_list, dir_name=None):
 
-    collection_name = 'col-' + str(time.time())
+    collection_name = 'col-' + str(time.time()) if (dir_name is None) else dir_name
     STORAGE_PATH    = os.path.join(settings.COLLECTION_UPLOADS, collection_name)
 
     for file in file_list:

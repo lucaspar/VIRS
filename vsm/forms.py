@@ -1,6 +1,8 @@
 from django import forms
+from .models import Collection
 
-class UploadFileForm(forms.Form):
+class CollectionUploadForm(forms.ModelForm):
 
-    title = forms.CharField(max_length=50)
-    files = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    class Meta:
+        model = Collection
+        fields = ('title', 'description')
