@@ -24,3 +24,4 @@ RUN chmod -R g+w ${APP_DIR}
 
 # Select user
 USER app
+
