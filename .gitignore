@@ -1,5 +1,6 @@
 # ignore database and uploads
 .db/
+.db.backup/
 uploads/
 
 # Others
