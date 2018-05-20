@@ -1,5 +1,5 @@
-# postgres volume
-postgres-data/
+# ignore app data
+.db/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
