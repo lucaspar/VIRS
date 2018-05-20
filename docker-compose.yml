@@ -23,7 +23,7 @@ services:
   # DB MIGRATION
   migration:
     build: .
-    command: ./manage.py migrate
+    command: bash -c './manage.py makemigrations && ./manage.py migrate'
     depends_on:
       - db
     user: "1000"

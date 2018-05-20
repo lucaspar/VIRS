@@ -3,6 +3,9 @@
 .db.backup/
 uploads/
 
+# ignore migrations
+*/migrations/
+
 # Others
 __pycache__/
 *.py[cod]
