@@ -1,0 +1,21 @@
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <header class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#barra-navegacao">
+                <span class="sr-only">Alternar Menu</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" title="Visualization and Information Retrieval System" href="/">VIRS</small></a>
+        </header>
+        <div class="collapse navbar-collapse" id="barra-navegacao">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'upload' %}">   <i class="fas fa-fw fa-upload"> </i> Upload de Coleção</a></li>
+                <li><a href="{% url 'postings' %}"> <i class="fas fa-fw fa-file">   </i> Arquivo Invertido</a></li>
+                <li><a href="{% url 'vsm' %}">      <i class="fab fa-fw fa-hubspot"></i> Modelo Vetorial</a></li>
+                <li><a href="{% url 'query' %}">    <i class="fab fa-searchengin">  </i> Consulta</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

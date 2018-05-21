@@ -56,7 +56,7 @@ ROOT_URLCONF = 'virs.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -129,7 +129,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "templates/static"),
+]
 
 # Upload locations
 UPLOADS = os.path.join(BASE_DIR, 'uploads/')
 COLLECTION_UPLOADS = os.path.join(UPLOADS, 'collections')
+
+# Google reCAPTCHA keys
+GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf0VVoUAAAAAL2OHFc8WxCU75oR9hcYHMSzwv7c'
+GOOGLE_RECAPTCHA_PUBLIC_KEY = '6Lf0VVoUAAAAAMjSRIssAftFUQMBuO3vrJqsBc1B'
