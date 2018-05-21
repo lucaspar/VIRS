@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% include 'partials/meta.html' %}
+
+    <title>{% block title %}{% endblock title %} | VIRS</title>
+
+    {% include 'partials/styles.html' %}
+    {% block pagestyles %}{% endblock pagestyles %}
+
+</head>
+
+<body>
+
+    {% include 'partials/messages.html' %}
+    {% include 'partials/header.html' %}
+
+    <div class="container">
+        <h2>{% block pageheader %}{% endblock pageheader %}</h2>
+        <hr>
+        {% block content %}{% endblock content %}
+    </div>
+
+    {% include 'partials/footer.html' %}
+    {% include 'partials/scripts.html' %}
+
+    {% block pagescripts %}{% endblock pagescripts %}
+
+</body>
+
+</html>

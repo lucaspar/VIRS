@@ -20,16 +20,18 @@ def home(request):
     ii = InvertedIndex("/virs/collection/")
     tokens = ii.collectionPostingsList()
     context = {
-        'section_title': 'VIRS - Visualization and Information Retrieval System',
+        'title': 'Visualization and Information Retrieval System',
         'tokens' : tokens,
     }
 
     # load template
-    template = loader.get_template('index.html')
+    template = loader.get_template('vsm/index.html')
 
     return HttpResponse(template.render(context, request))
 
-# Upload view (GET and POST)
+
+# ----------------------------------------
+# Handle user uploads (GET and POST)
 @check_recaptcha
 def upload(request):
 
@@ -54,4 +56,35 @@ def upload(request):
             return redirect('home')
 
     # handle other requests or POST failure
-    return render(request, 'upload.html')
+    context = {
+        'title': 'Upload de Coleção',
+        'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+    }
+    return render(request, 'vsm/upload.html', context)
+
+
+# ----------------------------------------
+# Shows a collection's Postings List
+def postings(request):
+    context = {
+        'title': 'Arquivo Invertido',
+    }
+    return render(request, 'vsm/postings.html', context)
+
+
+# ----------------------------------------
+# Shows a collection's Vector Space Model
+def vsm(request):
+    context = {
+        'title': 'Modelo Vetorial',
+    }
+    return render(request, 'vsm/vsm.html', context)
+
+
+# ----------------------------------------
+# Handles user searches over a collection
+def query(request):
+    context = {
+        'title': 'Consulta',
+    }
+    return render(request, 'vsm/query.html', context)

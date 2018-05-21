@@ -1,0 +1,47 @@
+{% extends '../virs-base.html' %}
+
+{% block title %}Upload de coleção{% endblock title%}
+{% block pageheader %}{{ title }}{% endblock pageheader%}
+
+{% block content %}
+    <form id="upload-form" action=upload method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input hidden type="text" name="g-recaptcha-response" id="g-recaptcha-response">
+        <div class="form-group">
+            <label for="nome">Escolha os arquivos</label>
+            <input type="text" class='form-control' name='title' placeholder="Título da coleção">
+            <input type="text" class='form-control' name='description' placeholder="Descrição">
+            <input type="file" class="form-control" name="files" multiple>
+        </div>
+        <button type="submit" class="btn btn-default">Upload</button>
+    </form>
+{% endblock content %}
+
+
+{% block pagescripts %}
+    <script src='https://www.google.com/recaptcha/api.js?render=6Lf0VVoUAAAAAMjSRIssAftFUQMBuO3vrJqsBc1B'></script>
+    <script>
+
+        var form = document.getElementById('upload-form');
+        if (form.attachEvent) {
+            form.attachEvent("submit", processForm);
+        }
+        else {
+            form.addEventListener("submit", processForm);
+        }
+
+        function processForm(e){
+            if (e.preventDefault) e.preventDefault();
+            grecaptcha.ready(function() {
+                grecaptcha
+                .execute('{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}', {action: 'VIRSCollectionUpload'})
+                .then(function(token) {
+                    document.getElementById("g-recaptcha-response").value = token;
+                    form.submit();
+                });
+            });
+            return false;
+        }
+
+    </script>
+{% endblock pagescripts %}

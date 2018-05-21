@@ -1,6 +1,7 @@
 from cop.collection import Collection
 from collections import deque
 
+# Creates the inverted index (or postings list) of a collection
 class InvertedIndex(object):
 
     def __init__(self, collection_path):
