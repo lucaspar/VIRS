@@ -16,18 +16,11 @@ import urllib
 # Home view
 def home(request):
 
-    # load collection
-    ii = InvertedIndex("/virs/collection/")
-    tokens = ii.collectionPostingsList()
     context = {
         'title': 'Visualization and Information Retrieval System',
-        'tokens' : tokens,
     }
 
-    # load template
-    template = loader.get_template('vsm/index.html')
-
-    return HttpResponse(template.render(context, request))
+    return render(request, 'vsm/index.html', context)
 
 
 # ----------------------------------------
@@ -66,9 +59,16 @@ def upload(request):
 # ----------------------------------------
 # Shows a collection's Postings List
 def postings(request):
+
+    # load collection
+    ii = InvertedIndex("/virs/collection/")
+    postings = ii.collectionPostingsList()
+
     context = {
         'title': 'Arquivo Invertido',
+        'postings' : postings,
     }
+
     return render(request, 'vsm/postings.html', context)
 
 
