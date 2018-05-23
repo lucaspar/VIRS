@@ -81,12 +81,25 @@ def vsm(request):
     vsm = VectorSpaceModel("/virs/collection/")
     vsm_table = vsm.generateVectorSpaceModel()
 
-    print(vsm_table)
+    # form table headers
+    headers = []
+    for term, value in vsm_table.items():
+        for header, v in value.items():
+            if header is 'tf' or header is 'tfidf':
+                for c in range(0, len(v)):
+                    headers.append(header + ' ' + str(c))
+            else:
+                headers.append(header)
+        break
 
+    # pass data to context
     context = {
         'title': 'Modelo Vetorial',
         'vsm': vsm_table,
+        'headers': headers,
     }
+
+    # render template
     return render(request, 'vsm/vsm.html', context)
 
 
