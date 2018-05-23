@@ -11,6 +11,7 @@ class InvertedIndex(object):
 
         # set a reference to collection processing module
         self.cc = Collection(self.collection_path)
+        self.file_list = self.cc.file_list
 
 
     # count word frequencies given a @filename
@@ -34,11 +35,10 @@ class InvertedIndex(object):
 
 
     # craft postings list
-    def collectionPostingsList (self):
+    def generatePostingsList (self):
         postings = {}
-        files = self.cc.getFileList()
 
-        for _file in files:
+        for _file in self.file_list:
 
             # count term frequencies for file
             terms_frequencies = self.countTokens(_file)

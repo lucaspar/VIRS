@@ -5,6 +5,7 @@ from django.template import loader
 from django.conf import settings
 
 from cop.invertedIndex import InvertedIndex
+from cop.vectorSpaceModel import VectorSpaceModel
 from .storage import handle_uploaded_files
 from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
@@ -62,7 +63,7 @@ def postings(request):
 
     # load collection
     ii = InvertedIndex("/virs/collection/")
-    postings = ii.collectionPostingsList()
+    postings = ii.generatePostingsList()
 
     context = {
         'title': 'Arquivo Invertido',
@@ -75,8 +76,16 @@ def postings(request):
 # ----------------------------------------
 # Shows a collection's Vector Space Model
 def vsm(request):
+
+    # load collection
+    vsm = VectorSpaceModel("/virs/collection/")
+    vsm_table = vsm.generateVectorSpaceModel()
+
+    print(vsm_table)
+
     context = {
         'title': 'Modelo Vetorial',
+        'vsm': vsm_table,
     }
     return render(request, 'vsm/vsm.html', context)
 

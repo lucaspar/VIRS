@@ -7,4 +7,36 @@
 
     {% comment %} Content here {% endcomment %}
 
+    <table>
+
+        <th>Termo</th>
+        {% for header in vsm.popitem.1  %}
+
+            {% if header == 'tf' or header == 'tfidf' %}
+                {% for t in vsm.popitem.1.tf %}
+                    <th>{{ header }} {{ forloop.counter }}</th>
+                {% endfor %}
+            {% else %}
+                <th>{{ header }}</th>
+            {% endif %}
+        {% endfor %}
+
+        {% for term, props in vsm.items  %}
+            <tr>
+                <td>{{ term }}</td>
+            {% for t, p in props.items  %}
+                {% if t == 'tf' or t == 'tfidf' %}
+                    {% for num in p %}
+                        <td>{{ num }}</td>
+                    {% endfor %}
+                {% else %}
+                    <td>{{ p }}</td>
+                {% endif %}
+
+            {% endfor %}
+            </tr>
+        {% endfor %}
+
+    </table>
+
 {% endblock content %}

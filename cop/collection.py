@@ -8,7 +8,7 @@ class Collection(object):
 
     def __init__(self, collection_path):
         self.collection_path = collection_path
-        self.filelist = self.getFileList()
+        self.file_list = self.getFileList()
 
         # Attempts to get stopwords
         try:
@@ -54,7 +54,7 @@ class Collection(object):
     # Load collection of documents given a file @path
     def loadCollection(self):
         tokens = []
-        for filename in self.filelist :
+        for filename in self.file_list :
             wordlist = self.processTokens(self.collection_path + filename)
             for word in wordlist :
                 tokens.append(word)
