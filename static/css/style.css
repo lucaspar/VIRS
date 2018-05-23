@@ -1,8 +1,107 @@
+html, body {
+    min-width: 100vw;
+    min-height: 100vh;
+    line-height: 160%;
+    overflow-x: hidden;
+}
 #footer {
-    position: absolute;
-    bottom: 0;
     width: 100%;
     height: 40px;
     line-height: 40px;
+    position: relative;
+    margin-top: -40px;
     background-color: black;
+}
+#wrapper {
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+#content {
+    display: flex;
+    padding-bottom: 4em;
+    flex-direction: column;
+}
+#content > * {
+    flex: 1;
+}
+.cell {
+    margin: 0 1em;
+    width: 10em;
+    padding: 1em;
+    max-width: 10em;
+    transition: 0.5s;
+    text-align: center;
+    border-radius: 10px;
+    background-color: #ddd;
+    box-shadow: 3px 3px 6px #bbb;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.cell:hover {
+    width: auto;
+    min-width: 10em;
+    transition: 0.5s;
+    max-width: none;
+    position: relative;
+    overflow: visible;
+}
+.cell.header {
+    width: auto;
+    max-width: none;
+    box-shadow: none;
+    background-color: transparent;
+}
+.cell.token {
+    background-color: #b60303;
+    color: white;
+    margin: 0;
+}
+.cell.separator {
+    background-color: transparent;
+    box-shadow: none;
+    min-width: 3em;
+    padding: 1em 0;
+    width: auto;
+    margin: 0;
+}
+.cell.df {
+    width: auto;
+    min-width: 3em;
+    font-weight: bold;
+    background-color: #56ff99;
+    font-family: 'Courier New', Courier, monospace;
+}
+.cell.doc {
+    border-radius: 10px 0 0 10px;
+    background-color: #376aa5;
+    margin-right: 0;
+    color: white;
+}
+.cell.tf {
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 0 10px 10px 0 ;
+    background-color: #234974;
+    font-weight: bold;
+    margin-left: 0;
+    color: white;
+    min-width: 3em;
+    width: auto;
+}
+.postings {
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+.postings-line {
+    /* min-width: 100%; */
+    margin: 0.5em 0;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-flex;
+}
+.postings-token {
+    float: right;
+    display: flex;
 }
