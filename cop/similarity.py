@@ -25,10 +25,10 @@ class Similarity:
         sim = numerator / (sqrtDoc * sqrtQuery)
         return sim
 
-    def calculate_rank(docs_tfidf, query_w):
+    def calculate_rank(docs, docs_tfidf, query_w):
         rank = []
-        for tfidf in docs_tfidf:
-            rank.append(sim(tfidf, query_w))
+        for doc, tfidf in zip(docs, docs_tfidf):
+            rank.append(sim(tfidf, query_w), doc)
         rank.sort()
         return rank
 
