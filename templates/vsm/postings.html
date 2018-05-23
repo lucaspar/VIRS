@@ -38,7 +38,7 @@
                         <div class='cell df'>{{ values|length }}</div>
                         {% for value in values %}
                         <div class="cell separator"><div class="fas fa-fw fa-lg fa-long-arrow-alt-right"></div></div>
-                        <div class='cell doc'>{{ value.0 }}</div>
+                        <div class='cell doc'>{{ friendly_filenames|get_item:value.0 }}</div>
                         <div class='cell tf'>{{ value.1 }}</div>
                         {% endfor %}
                     </div>

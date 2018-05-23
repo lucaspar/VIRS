@@ -38,8 +38,12 @@ class InvertedIndex(object):
     # craft postings list
     def generatePostingsList (self):
         postings = {}
+        friendly_filenames = {}
 
         for _file in self.file_list:
+
+            friendly_filenames[_file] = '.'.join(_file.split('.')[1:])
+            print(friendly_filenames[_file])
 
             # count term frequencies for file
             terms_frequencies = self.countTokens(_file)
@@ -51,4 +55,4 @@ class InvertedIndex(object):
                     postings[t] = deque([])
                 postings[t].append((_file, f))
 
-        return postings
+        return postings, friendly_filenames

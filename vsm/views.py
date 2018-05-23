@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
+from django.template.defaulttags import register
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django.contrib import messages
@@ -96,16 +97,21 @@ def upload(request):
 # Shows a collection's Postings List
 def postings(request):
 
+    # if POST request, set cookie and redirect to GET request
+    if request.method == 'POST':
+        return handleCollectionPost(request)
+
     # load collection
-    ii = InvertedIndex("/virs/collection/")
-    postings = ii.generatePostingsList()
+    ii = InvertedIndex( buildCollectionPath(request) )
+    postings, friendly_filenames = ii.generatePostingsList()
 
     # pass computed data in context
     context = {
         'title': 'Arquivo Invertido',
-        'postings' : postings,
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'postings': postings,
+        'friendly_filenames': friendly_filenames,
     }
 
     # build response
@@ -140,6 +146,7 @@ def vsm(request):
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'vsm': vsm_table,
         'headers': headers,
+        'friendly_filenames': vsm.friendly_filenames,
     }
 
     # build response
@@ -150,6 +157,10 @@ def vsm(request):
 # Handles user searches over a collection
 def query(request):
 
+    # if POST request, set cookie and redirect to GET request
+    if request.method == 'POST':
+        return handleCollectionPost(request)
+
     context = {
         'title': 'Consulta',
         'collections': list(Collection.objects.all()),
@@ -158,3 +169,10 @@ def query(request):
 
     # build response
     return standardResponse(request, context, 'vsm/query.html')
+
+# ----------------------------------------
+#            TEMPLATING METHODS
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

@@ -18,7 +18,7 @@ class VectorSpaceModel(object):
         self.corpus_size = len(self.file_list)
 
         # create the collection's postings list
-        self.postings = self.ii.generatePostingsList()
+        self.postings, self.friendly_filenames = self.ii.generatePostingsList()
 
     # Calculates the normalized term frequency given a tf and a maximum tf
     def normalized_tf(self, tf, max_tf):
