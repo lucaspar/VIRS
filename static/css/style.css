@@ -1,4 +1,5 @@
 html, body {
+    background-color: #f4f4f4;
     min-width: 100vw;
     min-height: 100vh;
     line-height: 160%;
@@ -23,6 +24,18 @@ html, body {
 }
 #content > * {
     flex: 1;
+}
+input {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.card {
+    box-shadow: 5px 5px 20px #ccc;
+    background-color: white;
+    border-radius: 15px;
+    margin: 2em 0;
+    display: block;
+    padding: 2em;
 }
 .cell {
     margin: 0 1em;

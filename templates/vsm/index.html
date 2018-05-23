@@ -3,7 +3,85 @@
 {% block title %}{{ title }}{% endblock title%}
 
 {% block content %}
+    <div class="row">
+        <div class="col-md-12">
 
-    {% comment %} Content here {% endcomment %}
+        </div>
+        <div class="col-md-6">
+            <h3>Comece escolhendo uma coleção</h3>
+            <div class="card">
+                <form style="margin-top: 20px;" action="{% url 'postings' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-sm-10">
+                        <select class="form-control" name="collection_selector">
+                            <option value="0"
+                            {% if sel_collection == '' %}
+                                selected
+                            {% endif %}
+                                disabled>Escolha uma coleção</option>
 
+                            {% for col in collections  %}
+
+                                {% if sel_collection == col.id|stringformat:"s" %}
+                                    <option value="{{ col.id }}" selected>{{ col.title }}</option>
+                                {% else %}
+                                    <option value="{{ col.id }}">{{ col.title }}</option>
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+                        <input type="submit" class="form-control btn btn-primary" value="Processar">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Ou faça o upload de uma nova</h3>
+            <div class="card">
+                <p>O VIRS funciona melhor com arquivos de texto puro (.txt).</p>
+                <p>Apesar do upload de outros formatos ser possível, não há qualquer processamento
+                    para extrair corretamente o texto desses arquivos.</p>
+                <form id="upload-form" action=upload method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input hidden type="text" name="g-recaptcha-response" id="g-recaptcha-response">
+                    <div class="form-group">
+                        <input type="text" class='form-control' name='title' placeholder="Título da coleção">
+                        <input type="text" class='form-control' name='description' placeholder="Descrição">
+                        <input type="file" class="form-control" name="files" multiple>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
+
+
+{% block pagescripts %}
+    <script src='https://www.google.com/recaptcha/api.js?render=6Lf0VVoUAAAAAMjSRIssAftFUQMBuO3vrJqsBc1B'></script>
+    <script>
+
+        var form = document.getElementById('upload-form');
+        if (form.attachEvent) {
+            form.attachEvent("submit", processForm);
+        }
+        else {
+            form.addEventListener("submit", processForm);
+        }
+
+        function processForm(e){
+            if (e.preventDefault) e.preventDefault();
+            grecaptcha.ready(function() {
+                grecaptcha
+                .execute('{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}', {action: 'VIRSCollectionUpload'})
+                .then(function(token) {
+                    document.getElementById("g-recaptcha-response").value = token;
+                    form.submit();
+                });
+            });
+            return false;
+        }
+
+    </script>
+{% endblock pagescripts %}
