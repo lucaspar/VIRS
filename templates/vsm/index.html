@@ -4,36 +4,34 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-12">
-
-        </div>
         <div class="col-md-6">
             <h3>Comece escolhendo uma coleção</h3>
             <div class="card">
-                <form style="margin-top: 20px;" action="{% url 'postings' %}" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="col-sm-10">
-                        <select class="form-control" name="collection_selector">
-                            <option value="0"
-                            {% if sel_collection == '' %}
-                                selected
-                            {% endif %}
-                                disabled>Escolha uma coleção</option>
-
-                            {% for col in collections  %}
-
-                                {% if sel_collection == col.id|stringformat:"s" %}
-                                    <option value="{{ col.id }}" selected>{{ col.title }}</option>
-                                {% else %}
-                                    <option value="{{ col.id }}">{{ col.title }}</option>
+                <div class="col-sm-12">
+                    <form action="{% url 'postings' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                            <select autofocus class="form-control" name="collection_selector">
+                                <option value="0"
+                                {% if sel_collection == '' %}
+                                    selected
                                 {% endif %}
+                                    disabled>Escolha uma coleção</option>
 
-                            {% endfor %}
+                                {% for col in collection_wheel  %}
 
+                                    {% if sel_collection == col.id|stringformat:"s" %}
+                                        <option value="{{ col.id }}" selected>{{ col.title }}</option>
+                                    {% else %}
+                                        <option value="{{ col.id }}">{{ col.title }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
                         </select>
-                        <input type="submit" class="form-control btn btn-primary" value="Processar">
-                    </div>
-                </form>
+                        <div class="form-group" style="text-align:center;">
+                            <input type="submit" class="btn btn-primary" value="Processar">
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
@@ -50,8 +48,51 @@
                         <input type="text" class='form-control' name='description' placeholder="Descrição">
                         <input type="file" class="form-control" name="files" multiple>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <div class="form-group" style="text-align:center;">
+                        <input type="submit" class="btn btn-primary" value="Criar coleção"></button>
+                    </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Remover uma coleção</h4>
+                <form id='delete-form' action="{% url 'delete_collection' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <select class="form-control" id="collection_deletion" autofocus name="collection_deletion">
+                                <option value="0"
+                                {% if sel_collection == '' %}
+                                    selected
+                                {% endif %}
+                                    disabled>Escolha uma coleção</option>
+
+                                {% for col in collection_wheel  %}
+
+                                    {% if sel_collection == col.id|stringformat:"s" %}
+                                        <option value="{{ col.id }}" selected>{{ col.title }}</option>
+                                    {% else %}
+                                        <option value="{{ col.id }}">{{ col.title }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-danger" value="Remover">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Enviar feedback</h4>
+                <a href="mailto:virs@lucaspar.com">Mande uma mensagem</a>
             </div>
         </div>
     </div>
@@ -80,6 +121,26 @@
                     form.submit();
                 });
             });
+            return false;
+        }
+
+    </script>
+
+    <script>
+
+        var delForm = document.getElementById('delete-form');
+        if (delForm.attachEvent)    delForm.attachEvent("submit", processForm);
+        else                        delForm.addEventListener("submit", processForm);
+
+        function processForm(e){
+            if (e.preventDefault) e.preventDefault();
+
+            el = document.getElementById('collection_deletion');
+            selected_label = el.options[el.selectedIndex].innerHTML;
+
+            var confirmed = confirm("Deseja remover a coleção \"" + selected_label + '\"?');
+            if (confirmed) delForm.submit();
+
             return false;
         }
 

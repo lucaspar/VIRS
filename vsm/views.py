@@ -48,11 +48,51 @@ def standardResponse(request, context, template_path):
 # ----------------------------------------
 #               VIEW METHODS
 
+def delete(request):
+
+    if request.method == 'POST':
+        uuid = request.POST.get('collection_deletion')
+        print('TO BE REMOVED: ', uuid)
+
+        try:
+            # get collection from DB
+            col = Collection.objects.get(pk=uuid)
+
+            # make dir if does not exist
+            if not os.path.exists( settings.DELETED_COLLECTIONS ):
+                os.makedirs(settings.DELETED_COLLECTIONS)
+
+            # get paths
+            current_collection_path = os.path.join(settings.COLLECTION_UPLOADS, str(col.id))
+            new_collection_path = os.path.join(settings.DELETED_COLLECTIONS, str(col.id))
+
+            # move files
+            os.rename(current_collection_path, new_collection_path)
+
+            # delete from database
+            col.delete()
+
+            # message visitor
+            messages.success(request, 'Coleção removida')
+
+        # collection not in database
+        except Collection.DoesNotExist:
+            messages.error(request, 'Coleção inexistente')
+
+    return redirect('home')
+
 # Home view
 def home(request):
 
+    if request.method == 'POST':
+        col = request.POST.get('collection_deletion')
+        print('TO BE REMOVED: ', col)
+        return redirect('home')
+
     context = {
         'title': 'Visualization and Information Retrieval System',
+        'collection_wheel': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
 
     return render(request, 'vsm/index.html', context)
