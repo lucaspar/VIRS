@@ -48,9 +48,6 @@ class VectorSpaceModel(object):
         vsm = {}
         file_indexes = {filename: counter for counter, filename in enumerate(self.file_list)}
 
-        for filename in self.file_list :
-            print(filename, file_indexes[filename])
-
         # calculate idf and frequencies for all terms
         for term, postings in self.postings.items():
 

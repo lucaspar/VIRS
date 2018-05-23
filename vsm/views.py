@@ -1,5 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
+from django.template import RequestContext
 from django.contrib import messages
 from django.template import loader
 from django.conf import settings
@@ -11,8 +13,39 @@ from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
 from .models import Collection
 
+import os
 import json
 import urllib
+
+SEL_COLLECTION_COOKIE = 'sel_collection'
+
+# ----------------------------------------
+#             AUXILIAR METHODS
+
+# Handles POST request of collection selection
+def handleCollectionPost(request):
+    current_collection = request.POST.get('collection_selector')
+    response = redirect(request.path_info)
+    response.set_cookie(SEL_COLLECTION_COOKIE, current_collection)
+    return response
+
+# Builds a collection's filesystem path from cookie
+def buildCollectionPath(request):
+    current_collection = request.COOKIES.get(SEL_COLLECTION_COOKIE, False)
+    if current_collection:
+        # TODO: validate collection uuid from cookie
+        collection_path = os.path.join(settings.COLLECTION_UPLOADS, current_collection)
+    else:
+        collection_path = "/virs/collection/"       # default fallback
+    return collection_path
+
+def standardResponse(request, context, template_path):
+    rendered = render_to_string(template_path, context, request=request)
+    response = HttpResponse(rendered)
+    return response
+
+# ----------------------------------------
+#               VIEW METHODS
 
 # Home view
 def home(request):
@@ -54,7 +87,9 @@ def upload(request):
         'title': 'Upload de Coleção',
         'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
     }
-    return render(request, 'vsm/upload.html', context)
+
+    # build response
+    return standardResponse(request, context, 'vsm/upload.html')
 
 
 # ----------------------------------------
@@ -65,20 +100,26 @@ def postings(request):
     ii = InvertedIndex("/virs/collection/")
     postings = ii.generatePostingsList()
 
+    # pass computed data in context
     context = {
         'title': 'Arquivo Invertido',
         'postings' : postings,
+        'collections': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
 
-    return render(request, 'vsm/postings.html', context)
-
+    # build response
+    return standardResponse(request, context, 'vsm/postings.html')
 
 # ----------------------------------------
 # Shows a collection's Vector Space Model
 def vsm(request):
 
-    # load collection
-    vsm = VectorSpaceModel("/virs/collection/")
+    # if POST request, set cookie and redirect to GET request
+    if request.method == 'POST':
+        return handleCollectionPost(request)
+
+    vsm = VectorSpaceModel( buildCollectionPath(request) )
     vsm_table = vsm.generateVectorSpaceModel()
 
     # form table headers
@@ -92,21 +133,28 @@ def vsm(request):
                 headers.append(header)
         break
 
-    # pass data to context
+    # pass computed data in context
     context = {
         'title': 'Modelo Vetorial',
+        'collections': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'vsm': vsm_table,
         'headers': headers,
     }
 
-    # render template
-    return render(request, 'vsm/vsm.html', context)
+    # build response
+    return standardResponse(request, context, 'vsm/vsm.html')
 
 
 # ----------------------------------------
 # Handles user searches over a collection
 def query(request):
+
     context = {
         'title': 'Consulta',
+        'collections': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
-    return render(request, 'vsm/query.html', context)
+
+    # build response
+    return standardResponse(request, context, 'vsm/query.html')
