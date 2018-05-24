@@ -6,29 +6,47 @@
 
     {% comment %} Content here {% endcomment %}
 
-    <table>
+    <div class="card">
 
-        <th>Termo</th>
-        {% for header in headers  %}
-            <th>{{ header }}</th>
-        {% endfor %}
-
-        {% for term, props in vsm.items  %}
-            <tr>
-                <td>{{ term }}</td>
-                {% for t, p in props.items  %}
-                    {% if t == 'tf' or t == 'tfidf' %}
-                        {% for num in p %}
-                            <td>{{ num }}</td>
-                        {% endfor %}
-                    {% else %}
-                        <td>{{ p }}</td>
-                    {% endif %}
-
+        <div style="overflow:auto;" class="col-lg-2 col-md-4 col-sm-6 col-xs-6">
+            <table>
+                <tr>
+                    <th>Termo</th>
+                </tr>
+                {% for term, props in vsm.items  %}
+                <tr>
+                    <td>{{ term }}</td>
+                </tr>
                 {% endfor %}
-            </tr>
-        {% endfor %}
 
-    </table>
+            </table>
+        </div>
+        <div style="overflow:auto;" class="col-lg-10 col-md-8 col-sm-6 col-xs-6">
+            <table class="border-table">
+
+                <tr>
+                    {% for header in headers  %}
+                    <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+
+                {% for term, props in vsm.items  %}
+                    <tr>
+                        {% for t, p in props.items  %}
+                            {% if t == 'tf' or t == 'tfidf' %}
+                                {% for num in p %}
+                                    <td>{{ num }}</td>
+                                {% endfor %}
+                            {% else %}
+                                <td>{{ p }}</td>
+                            {% endif %}
+
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
 
 {% endblock content %}

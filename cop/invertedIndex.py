@@ -43,7 +43,6 @@ class InvertedIndex(object):
         for _file in self.file_list:
 
             friendly_filenames[_file] = '.'.join(_file.split('.')[1:])
-            print(friendly_filenames[_file])
 
             # count term frequencies for file
             terms_frequencies = self.countTokens(_file)

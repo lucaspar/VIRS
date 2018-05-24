@@ -132,12 +132,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     os.path.join(BASE_DIR, "templates/static"),
+    os.path.join(BASE_DIR, "uploads/collections"),
 ]
 
 # Upload locations
-UPLOADS = os.path.join(BASE_DIR, 'uploads/')
-COLLECTION_UPLOADS = os.path.join(UPLOADS, 'collections')
+UPLOADS             = os.path.join(BASE_DIR, 'uploads/')
+COLLECTION_UPLOADS  = os.path.join(UPLOADS, 'collections')
 DELETED_COLLECTIONS = os.path.join(UPLOADS, 'deleted')
+USER_QUERIES        = os.path.join(UPLOADS, 'queries')
 
 # Google reCAPTCHA keys
 GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf0VVoUAAAAAL2OHFc8WxCU75oR9hcYHMSzwv7c'
