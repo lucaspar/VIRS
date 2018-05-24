@@ -175,9 +175,10 @@ def vsm(request):
     for term, value in vsm_table.items():
         for header, v in value.items():
             if header is 'tf' or header is 'tfidf':
+                th = '[F]' if header is 'tf' else '[TF×IDF]'
                 for c in range(0, len(v)):
                     ffn = vsm.friendly_filenames[vsm.file_list[c]]
-                    headers.append(header.upper() + '-' + ffn)
+                    headers.append(th.upper() + ' ' + ffn)
             else:
                 headers.append(header.upper())
         break

@@ -69,9 +69,11 @@
     <div class="row">
 
         <div class="col-lg-12">
-            <div class="card">
-                <h3>TFIDFS</h3>
-                <table>
+            <div style="overflow: auto;" class="card">
+                <div class="block">
+                    <h3>TF&timesIDF por termo</h3>
+                </div>
+                <table class="border-table">
 
                     {% comment %} TABLE HEADERS: DOC TITLES AND COLLECTION TERMS {% endcomment %}
                     <tr>
@@ -90,7 +92,13 @@
                     <tr>
                         <td>{{ ffn|get_item:doc }}</td>
                         {% for tf in tfidfs|index:forloop.counter0 %}
-                            <td>{{ tf|roundAndAround }}</td>
+                            <td>
+                                {% if tf != 0 %}
+                                    {{ tf|roundAndAround }}
+                                {% else %}
+                                    &#8212;
+                                {% endif %}
+                            </td>
                         {% endfor %}
                     </tr>
                     {% endfor %}
@@ -99,7 +107,13 @@
                     <tr>
                         <td><strong><em>CONSULTA</em></strong></td>
                     {% for w in wq %}
-                        <td>{{ w|roundAndAround }}</td>
+                        <td>
+                            {% if w != 0 %}
+                                {{ w|roundAndAround }}
+                            {% else %}
+                                &#8212;
+                            {% endif %}
+                        </td>
                     {% endfor %}
                     </tr>
 
