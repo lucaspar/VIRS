@@ -48,15 +48,18 @@ def standardResponse(request, context, template_path):
 # ----------------------------------------
 #               VIEW METHODS
 
+# collection deletion procedure
 def delete(request):
 
     if request.method == 'POST':
         uuid = request.POST.get('collection_deletion')
-        print('TO BE REMOVED: ', uuid)
 
         try:
             # get collection from DB
             col = Collection.objects.get(pk=uuid)
+            if (col.read_only):
+                messages.error(request, 'Não é possível remover esta coleção')
+                return redirect('home')
 
             # make dir if does not exist
             if not os.path.exists( settings.DELETED_COLLECTIONS ):
@@ -83,11 +86,6 @@ def delete(request):
 
 # Home view
 def home(request):
-
-    if request.method == 'POST':
-        col = request.POST.get('collection_deletion')
-        print('TO BE REMOVED: ', col)
-        return redirect('home')
 
     context = {
         'title': 'Visualization and Information Retrieval System',
@@ -149,6 +147,7 @@ def postings(request):
     # pass computed data in context
     context = {
         'title': 'Arquivo Invertido',
+        'reference': 'https://pt.wikipedia.org/wiki/Listas_invertidas',
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'postings': postings,
@@ -183,6 +182,7 @@ def vsm(request):
     # pass computed data in context
     context = {
         'title': 'Modelo Vetorial',
+        'reference': 'https://pt.wikipedia.org/wiki/Modelo_vetorial_em_sistemas_de_recupera%C3%A7%C3%A3o_da_informa%C3%A7%C3%A3o',
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'vsm': vsm_table,
@@ -204,6 +204,7 @@ def query(request):
 
     context = {
         'title': 'Consulta',
+        'reference': 'https://en.wikipedia.org/wiki/Cosine_similarity',
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
