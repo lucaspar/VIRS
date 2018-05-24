@@ -47,7 +47,7 @@ def buildCollectionPath(request):
         # TODO: validate collection uuid from cookie
         collection_path = os.path.join(settings.COLLECTION_UPLOADS, current_collection)
     else:
-        collection_path = "/virs/collection/"       # default fallback
+        collection_path = "/virs/collection/xadrez"       # default fallback
     return collection_path
 
 def standardResponse(request, context, template_path):
