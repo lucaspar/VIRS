@@ -17,6 +17,7 @@ from .models import Collection
 
 import os
 import json
+import time
 import math
 import urllib
 
@@ -212,12 +213,18 @@ def query(request):
 
         # save query for processing
         query = request.POST.get('query')
-        file = open("query/query.txt","w")
-        file.write(str(query))
-        file.close()
+        filepath = os.path.join(settings.USER_QUERIES, str(time.time()))
 
-        # process query
-        query_ii_obj = InvertedIndex("/virs/query/")
+        # make dir if it does not exist
+        if not os.path.exists( filepath ):
+            os.makedirs(filepath)
+
+        # write query to file
+        with open(os.path.join(filepath, "query"), "w", errors='replace') as file:
+            file.write(str(query))
+
+        # process tokens in saved query
+        query_ii_obj = InvertedIndex(filepath)
         query_ii = query_ii_obj.generatePostingsList()
 
         # process selected collection

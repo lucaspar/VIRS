@@ -34,7 +34,7 @@
                 {% for doc in ranking %}
                 <div class="row">
                     <div class="col-xs-6">{{ doc.0|roundAndAround }}</div>
-                    <div class="col-xs-6">{{ ffn|get_item:doc.1 }}</div>
+                    <div class="col-xs-6"><h4><a target="_blank" href="/static/{{ sel_collection }}/{{ doc.1 }}">{{ ffn|get_item:doc.1 }}</a></h4></div>
                     <div class="col-xs-12"><hr></div>
                 </div>
                 {% endfor %}
