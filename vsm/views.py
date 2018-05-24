@@ -45,7 +45,7 @@ def buildCollectionPath(request):
     collection_path = None
     current_collection = request.COOKIES.get(SEL_COLLECTION_COOKIE, None)
     # check whether the object exists in database
-    if current_collection and Collection.objects.get(current_collection):
+    if current_collection and Collection.objects.get(pk=current_collection):
         collection_path = os.path.join(settings.COLLECTION_UPLOADS, current_collection)
     return collection_path
 

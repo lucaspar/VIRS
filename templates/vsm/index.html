@@ -8,7 +8,7 @@
             <h3>Comece escolhendo uma coleção</h3>
             <div class="card">
                 <div class="col-sm-12">
-                    <form action="{% url 'postings' %}" method="POST" enctype="multipart/form-data">
+                    <form action="{% url 'select_collection' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                             <select autofocus class="form-control" name="collection_selector">
                                 <option value="0"
