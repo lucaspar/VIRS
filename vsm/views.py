@@ -9,6 +9,7 @@ from django.conf import settings
 
 from cop.invertedIndex import InvertedIndex
 from cop.vectorSpaceModel import VectorSpaceModel
+from cop.similarity import Similarity
 from .storage import handle_uploaded_files
 from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
@@ -23,11 +24,18 @@ SEL_COLLECTION_COOKIE = 'sel_collection'
 # ----------------------------------------
 #             AUXILIAR METHODS
 
-# Handles POST request of collection selection
+# Handles POST request of collection selection by setting a session cookie
 def handleCollectionPost(request):
-    current_collection = request.POST.get('collection_selector')
-    response = redirect(request.path_info)
-    response.set_cookie(SEL_COLLECTION_COOKIE, current_collection)
+
+    # get referer for redirect
+    referer = request.META.get('HTTP_REFERER') if request.META.get('HTTP_REFERER') else '/'
+    response = redirect(referer)
+
+    # if POST, set a cookie
+    if request.method == 'POST':
+        current_collection = request.POST.get('collection_selector')
+        response.set_cookie(SEL_COLLECTION_COOKIE, current_collection)
+
     return response
 
 # Builds a collection's filesystem path from cookie
@@ -136,10 +144,6 @@ def upload(request):
 # Shows a collection's Postings List
 def postings(request):
 
-    # if POST request, set cookie and redirect to GET request
-    if request.method == 'POST':
-        return handleCollectionPost(request)
-
     # load collection
     ii = InvertedIndex( buildCollectionPath(request) )
     postings, friendly_filenames = ii.generatePostingsList()
@@ -161,10 +165,6 @@ def postings(request):
 # Shows a collection's Vector Space Model
 def vsm(request):
 
-    # if POST request, set cookie and redirect to GET request
-    if request.method == 'POST':
-        return handleCollectionPost(request)
-
     vsm = VectorSpaceModel( buildCollectionPath(request) )
     vsm_table = vsm.generateVectorSpaceModel()
 
@@ -174,9 +174,10 @@ def vsm(request):
         for header, v in value.items():
             if header is 'tf' or header is 'tfidf':
                 for c in range(0, len(v)):
-                    headers.append(header + ' ' + str(c))
+                    ffn = vsm.friendly_filenames[vsm.file_list[c]]
+                    headers.append(header.upper() + '-' + ffn)
             else:
-                headers.append(header)
+                headers.append(header.upper())
         break
 
     # pass computed data in context
@@ -197,44 +198,48 @@ def vsm(request):
 # ----------------------------------------
 # Handles user searches over a collection
 def query(request):
-  
-    '''
-    # TODO: mergear isso:
+
+    ranking = []
+
     if request.method == 'POST':
+
+        # save query for processing
         query = request.POST.get('query')
-        file = open("query/query.txt","w") 
-        file.write(str(query)) 
+        file = open("query/query.txt","w")
+        file.write(str(query))
         file.close()
 
-        ii = InvertedIndex("/virs/query/")
-        tokens = ii.collectionPostingsList()
+        # process query
+        query_vsm_obj = VectorSpaceModel("/virs/query/")
+        query_vsm = query_vsm_obj.generateVectorSpaceModel()
+        # print(query_vsm)
 
-        context = {
-            'title': 'Consulta',
-            'tokens': tokens,
-            'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
-        }
-    else:
-        file = open("query/query.txt","w") 
-        file.write("") 
-        file.close()
+        # process selected collection
+        vsm = VectorSpaceModel( buildCollectionPath(request) )
+        vsm_table = vsm.generateVectorSpaceModel()
 
-        context = {
-            'title': 'Consulta',
-            'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
-        }
-    return render(request, 'vsm/query.html', context)
-    '''
+        docs = vsm.file_list                        # documents list
+        wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
+        tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
 
-    # if POST request, set cookie and redirect to GET request
-    if request.method == 'POST':
-        return handleCollectionPost(request)
+        for dn, doc in enumerate(docs):
+            for tn, t in enumerate(vsm_table):
+                tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
+                if t in query_vsm:
+                    wq[tn] = query_vsm[t]['tfidf'][0]
+
+        sim = Similarity()
+        ranking = sim.calculate_rank(docs, tfidfs, wq)
+
+        print(ranking)
 
     context = {
         'title': 'Consulta',
         'reference': 'https://en.wikipedia.org/wiki/Cosine_similarity',
+        'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'ranking': ranking,
     }
 
     # build response
