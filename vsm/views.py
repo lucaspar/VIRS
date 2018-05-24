@@ -197,6 +197,34 @@ def vsm(request):
 # ----------------------------------------
 # Handles user searches over a collection
 def query(request):
+  
+    '''
+    # TODO: mergear isso:
+    if request.method == 'POST':
+        query = request.POST.get('query')
+        file = open("query/query.txt","w") 
+        file.write(str(query)) 
+        file.close()
+
+        ii = InvertedIndex("/virs/query/")
+        tokens = ii.collectionPostingsList()
+
+        context = {
+            'title': 'Consulta',
+            'tokens': tokens,
+            'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+        }
+    else:
+        file = open("query/query.txt","w") 
+        file.write("") 
+        file.close()
+
+        context = {
+            'title': 'Consulta',
+            'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+        }
+    return render(request, 'vsm/query.html', context)
+    '''
 
     # if POST request, set cookie and redirect to GET request
     if request.method == 'POST':

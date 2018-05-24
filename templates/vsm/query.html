@@ -3,7 +3,35 @@
 {% block title %}{{ title }}{% endblock title%}
 
 {% block content %}
-
-    {% comment %} Content here {% endcomment %}
-
+    <div class="row">
+        <form id="query-form" action=pesquisa method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-lg-12">
+                <div class="input-group">
+                    <input type="text" class='form-control' name='query' placeholder="Consulta na Coleção" required>
+                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th>Tokens </th>
+            <th>Documentos e Frequência</th>
+        </tr>
+        {% for token, values in tokens.items %}
+        <tr>
+            <td>{{ token }}</td>
+            <td>
+            {% for value in values %}
+                <span> ---
+                    {{ value.0 }} , {{ value.1 }}
+                </span>
+            {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock content %}
