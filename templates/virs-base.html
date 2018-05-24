@@ -2,28 +2,32 @@
 <html lang="en">
 <head>
 
-    {% include 'partials/meta.html' %}
+    {% include "partials/meta.html" %}
 
     <title>{% block title %}{% endblock title %} | VIRS</title>
 
-    {% include 'partials/styles.html' %}
+    {% include "partials/styles.html" %}
     {% block pagestyles %}{% endblock pagestyles %}
 
 </head>
 
 <body>
 
-    {% include 'partials/messages.html' %}
-    {% include 'partials/header.html' %}
+    <div id="wrapper">
+        {% include "partials/messages.html" %}
+        {% include "partials/header.html" %}
 
-    <div class="container">
-        <h2>{% block pageheader %}{% endblock pageheader %}</h2>
-        <hr>
-        {% block content %}{% endblock content %}
+        <div id="content" class="container">
+
+            {% include 'partials/pageheader.html' %}
+
+            {% block content %}{% endblock content %}
+
+        </div>
     </div>
 
-    {% include 'partials/footer.html' %}
-    {% include 'partials/scripts.html' %}
+    {% include "partials/footer.html" %}
+    {% include "partials/scripts.html" %}
 
     {% block pagescripts %}{% endblock pagescripts %}
 

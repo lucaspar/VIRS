@@ -8,7 +8,7 @@ class Collection(object):
 
     def __init__(self, collection_path):
         self.collection_path = collection_path
-        self.filelist = self.getFileList()
+        self.file_list = self.getFileList()
 
         # Attempts to get stopwords
         try:
@@ -24,7 +24,7 @@ class Collection(object):
     # Get a file list from @path with extension @ext
     def getFileList(self, ext='txt'):
         files  = os.listdir(self.collection_path)
-        texts = [_file for _file in files if _file.endswith("." + ext)]
+        texts = [_file for _file in files]
         return texts
 
 
@@ -32,7 +32,7 @@ class Collection(object):
     def processTokens(self, filepath):
 
         # read file content
-        with open(filepath, 'r') as _file:
+        with open(filepath, 'r', errors='replace') as _file:
             lines = _file.readlines()
 
         tokens = []
@@ -54,7 +54,7 @@ class Collection(object):
     # Load collection of documents given a file @path
     def loadCollection(self):
         tokens = []
-        for filename in self.filelist :
+        for filename in self.file_list :
             wordlist = self.processTokens(self.collection_path + filename)
             for word in wordlist :
                 tokens.append(word)

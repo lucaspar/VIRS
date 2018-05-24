@@ -137,6 +137,7 @@ STATICFILES_DIRS = [
 # Upload locations
 UPLOADS = os.path.join(BASE_DIR, 'uploads/')
 COLLECTION_UPLOADS = os.path.join(UPLOADS, 'collections')
+DELETED_COLLECTIONS = os.path.join(UPLOADS, 'deleted')
 
 # Google reCAPTCHA keys
 GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf0VVoUAAAAAL2OHFc8WxCU75oR9hcYHMSzwv7c'

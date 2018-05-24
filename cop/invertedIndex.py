@@ -1,5 +1,6 @@
 from cop.collection import Collection
 from collections import deque
+import os
 
 # Creates the inverted index (or postings list) of a collection
 class InvertedIndex(object):
@@ -11,6 +12,7 @@ class InvertedIndex(object):
 
         # set a reference to collection processing module
         self.cc = Collection(self.collection_path)
+        self.file_list = self.cc.file_list
 
 
     # count word frequencies given a @filename
@@ -20,7 +22,7 @@ class InvertedIndex(object):
         frequencies = {}
 
         # extract tokens from file
-        tokens = self.cc.processTokens(self.collection_path + filename)
+        tokens = self.cc.processTokens( os.path.join(self.collection_path, filename) )
 
         for token in tokens:
 
@@ -34,11 +36,14 @@ class InvertedIndex(object):
 
 
     # craft postings list
-    def collectionPostingsList (self):
+    def generatePostingsList (self):
         postings = {}
-        files = self.cc.getFileList()
+        friendly_filenames = {}
 
-        for _file in files:
+        for _file in self.file_list:
+
+            friendly_filenames[_file] = '.'.join(_file.split('.')[1:])
+            print(friendly_filenames[_file])
 
             # count term frequencies for file
             terms_frequencies = self.countTokens(_file)
@@ -50,4 +55,4 @@ class InvertedIndex(object):
                     postings[t] = deque([])
                 postings[t].append((_file, f))
 
-        return postings
+        return postings, friendly_filenames

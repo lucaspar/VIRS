@@ -1,25 +1,148 @@
 {% extends '../virs-base.html' %}
 
 {% block title %}{{ title }}{% endblock title%}
-{% block pageheader %}{{ title }}{% endblock pageheader%}
 
 {% block content %}
-    <table>
-        <tr>
-            <th>Tokens</th>
-            <th>Documentos e Frequência</th>
-        </tr>
-        {% for token, values in tokens.items %}
-        <tr>
-            <td>{{ token }}</td>
-            <td>
-            {% for value in values %}
-                <span> ---
-                    {{ value.0 }} , {{ value.1 }}
-                </span>
-            {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Comece escolhendo uma coleção</h3>
+            <div class="card">
+                <div class="col-sm-12">
+                    <form action="{% url 'postings' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                            <select autofocus class="form-control" name="collection_selector">
+                                <option value="0"
+                                {% if sel_collection == '' %}
+                                    selected
+                                {% endif %}
+                                    disabled>Escolha uma coleção</option>
+
+                                {% for col in collection_wheel  %}
+
+                                    {% if sel_collection == col.id|stringformat:"s" %}
+                                        <option value="{{ col.id }}" selected>{{ col.title }}</option>
+                                    {% else %}
+                                        <option value="{{ col.id }}">{{ col.title }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                        </select>
+                        <div class="form-group" style="text-align:center;">
+                            <input type="submit" class="btn btn-primary" value="Processar">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Ou faça o upload de uma nova</h3>
+            <div class="card">
+                <p>O VIRS funciona melhor com arquivos de texto puro (.txt).</p>
+                <p>Apesar do upload de outros formatos ser possível, não há qualquer processamento
+                    para extrair corretamente o texto desses arquivos.</p>
+                <form id="upload-form" action=upload method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input hidden type="text" name="g-recaptcha-response" id="g-recaptcha-response">
+                    <div class="form-group">
+                        <input type="text" class='form-control' name='title' placeholder="Título da coleção">
+                        <input type="text" class='form-control' name='description' placeholder="Descrição">
+                        <input type="file" class="form-control" name="files" multiple>
+                    </div>
+                    <div class="form-group" style="text-align:center;">
+                        <input type="submit" class="btn btn-primary" value="Criar coleção"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Remover uma coleção</h4>
+                <form id='delete-form' action="{% url 'delete_collection' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <select class="form-control" id="collection_deletion" autofocus name="collection_deletion">
+                                <option value="0"
+                                {% if sel_collection == '' %}
+                                    selected
+                                {% endif %}
+                                    disabled>Escolha uma coleção</option>
+
+                                {% for col in collection_wheel  %}
+
+                                    {% if sel_collection == col.id|stringformat:"s" %}
+                                        <option value="{{ col.id }}" selected>{{ col.title }}</option>
+                                    {% else %}
+                                        <option value="{{ col.id }}">{{ col.title }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-danger" value="Remover">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Enviar feedback</h4>
+                <a href="mailto:virs@lucaspar.com">Mande uma mensagem</a>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
+
+
+{% block pagescripts %}
+    <script src='https://www.google.com/recaptcha/api.js?render=6Lf0VVoUAAAAAMjSRIssAftFUQMBuO3vrJqsBc1B'></script>
+    <script>
+
+        var form = document.getElementById('upload-form');
+        if (form.attachEvent) {
+            form.attachEvent("submit", processForm);
+        }
+        else {
+            form.addEventListener("submit", processForm);
+        }
+
+        function processForm(e){
+            if (e.preventDefault) e.preventDefault();
+            grecaptcha.ready(function() {
+                grecaptcha
+                .execute('{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}', {action: 'VIRSCollectionUpload'})
+                .then(function(token) {
+                    document.getElementById("g-recaptcha-response").value = token;
+                    form.submit();
+                });
+            });
+            return false;
+        }
+
+    </script>
+
+    <script>
+
+        var delForm = document.getElementById('delete-form');
+        if (delForm.attachEvent)    delForm.attachEvent("submit", processForm);
+        else                        delForm.addEventListener("submit", processForm);
+
+        function processForm(e){
+            if (e.preventDefault) e.preventDefault();
+
+            el = document.getElementById('collection_deletion');
+            selected_label = el.options[el.selectedIndex].innerHTML;
+
+            var confirmed = confirm("Deseja remover a coleção \"" + selected_label + '\"?');
+            if (confirmed) delForm.submit();
+
+            return false;
+        }
+
+    </script>
+{% endblock pagescripts %}
