@@ -27,7 +27,7 @@ html, body {
 #content > * {
     flex: 1;
 }
-input, select {
+input, select, button {
     margin-top: 1em;
     margin-bottom: 1em;
 }

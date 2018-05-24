@@ -204,6 +204,7 @@ def query(request):
     docs = []
     tfidfs = []
     wq = []
+    col_terms = []
 
     if request.method == 'POST':
 
@@ -225,24 +226,31 @@ def query(request):
         wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
         tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
 
+        col_terms = ['' for i in range(len(vsm_table))]
+
         # calculate query weights
         max_freq = 0
-        terms = query_ii[0]
-        for t in terms:
-            print(t, terms[t], terms[t][0], terms[t][0][1])
-            max_freq = max(max_freq, terms[t][0][1])
+        query_terms = query_ii[0]
+        for t in query_terms:
+            print(t, query_terms[t], query_terms[t][0], query_terms[t][0][1])
+            max_freq = max(max_freq, query_terms[t][0][1])
 
         print('max freq:', max_freq)
-        for tn, t in enumerate(terms):
-            freq = terms[t][0][1]
-            if freq > 0 and t in vsm_table:
-                print('idf:', vsm_table[t]['idf'])
-                wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
-            else:
-                wq[tn] = 0
 
         for dn, doc in enumerate(docs):
             for tn, t in enumerate(vsm_table):
+
+                col_terms[tn] = t
+
+                # calculate term's tfidf in query
+                freq = query_terms[t][0][1] if t in query_terms else 0
+                if freq > 0 and t in vsm_table:
+                    print('idf:', vsm_table[t]['idf'])
+                    wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
+                else:
+                    wq[tn] = 0
+
+                # append to tfidfs
                 tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
                 # if t in query_vsm:
                 #     print(query_vsm[t])
@@ -261,6 +269,7 @@ def query(request):
         'docs': docs,
         'tfidfs': tfidfs,
         'wq': wq,
+        'terms': col_terms,
     }
 
     # build response
