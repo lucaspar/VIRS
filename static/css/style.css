@@ -139,3 +139,7 @@ input, select, button {
     font-size: 1.2em;
     color: #666;
 }
+.query {
+    font-style: italic;
+    color: rgb(11, 133, 204);
+}

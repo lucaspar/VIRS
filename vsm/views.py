@@ -200,12 +200,13 @@ def vsm(request):
 # Handles user searches over a collection
 def query(request):
 
-    ranking = []
-    docs = []
-    tfidfs = []
-    wq = []
     col_terms = []
+    ranking = []
+    tfidfs = []
+    query = ''
+    docs = []
     ffn = {}
+    wq = []
 
     if request.method == 'POST':
 

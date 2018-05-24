@@ -9,7 +9,7 @@
             {% csrf_token %}
             <div class="col-lg-12">
                 <div class="input-group">
-                    <input type="text" class='form-control' name='query' placeholder="Consulta na Coleção" required>
+                    <input type="text" class='form-control' name='query' placeholder="Consulta na Coleção" value="{{ query }}" required>
                     <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i>&nbsp</button>
                     </span>
@@ -21,11 +21,11 @@
     <div class="row">
 
         {% comment %} RANKING {% endcomment %}
-        {% if ranking %}
+        {% if ranking and query %}
         <div class="col-lg-8 col-md-12">
             <div class="card">
                 <div class="block">
-                    <h3>Resultados</h3>
+                    <h3>Resultados para <span class="query">{{ query }}</span></h3>
                 </div>
                 <div class="row">
                     <div class="col-xs-6"><div class="block"><h4>Similaridades</h4></div></div>
