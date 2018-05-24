@@ -116,6 +116,9 @@ input, select {
 }
 .postings-line {
     /* min-width: 100%; */
+    min-height: 3.5em;
+    max-height: 3.5em;
+    height: 3.5em;
     margin: 0.5em 0;
     padding-left: 0;
     padding-right: 0;

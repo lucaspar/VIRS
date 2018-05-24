@@ -32,7 +32,7 @@ class Collection(object):
     def processTokens(self, filepath):
 
         # read file content
-        with open(filepath, 'r') as _file:
+        with open(filepath, 'r', errors='replace') as _file:
             lines = _file.readlines()
 
         tokens = []
