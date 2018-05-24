@@ -200,6 +200,9 @@ def vsm(request):
 def query(request):
 
     ranking = []
+    docs = []
+    tfidfs = []
+    wq = []
 
     if request.method == 'POST':
 
@@ -210,9 +213,8 @@ def query(request):
         file.close()
 
         # process query
-        query_vsm_obj = VectorSpaceModel("/virs/query/")
-        query_vsm = query_vsm_obj.generateVectorSpaceModel()
-        # print(query_vsm)
+        query_ii_obj = InvertedIndex("/virs/query/")
+        query_ii = query_ii_obj.generatePostingsList()
 
         # process selected collection
         vsm = VectorSpaceModel( buildCollectionPath(request) )
@@ -222,16 +224,29 @@ def query(request):
         wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
         tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
 
+        # calculate query weights
+        max_freq = 0
+        terms = query_ii[0]
+        for t in terms:
+            print(t, terms[t], terms[t][0], terms[t][0][1])
+            max_freq = max(max_freq, terms[t][0][1])
+
+        for tn, t in enumerate(terms):
+            freq = terms[t][0][1]
+            if freq > 0:
+                wq[tn] = 0.5 + ( 0.5 * freq / max_freq ) * vsm_table[t]['idf']
+            else:
+                wq[tn] = 0
+
         for dn, doc in enumerate(docs):
             for tn, t in enumerate(vsm_table):
                 tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
-                if t in query_vsm:
-                    wq[tn] = query_vsm[t]['tfidf'][0]
+                # if t in query_vsm:
+                #     print(query_vsm[t])
+                #     wq[tn] = query_vsm[t]['tfidf'][0]
 
         sim = Similarity()
         ranking = sim.calculate_rank(docs, tfidfs, wq)
-
-        print(ranking)
 
     context = {
         'title': 'Consulta',
@@ -240,6 +255,9 @@ def query(request):
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'ranking': ranking,
+        'docs': docs,
+        'tfidfs': tfidfs,
+        'wq': wq,
     }
 
     # build response

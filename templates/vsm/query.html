@@ -16,22 +16,10 @@
             </div>
         </form>
     </div>
-    <table>
-        <tr>
-            <th>Tokens </th>
-            <th>Documentos e Frequência</th>
-        </tr>
-        {% for token, values in tokens.items %}
-        <tr>
-            <td>{{ token }}</td>
-            <td>
-            {% for value in values %}
-                <span> ---
-                    {{ value.0 }} , {{ value.1 }}
-                </span>
-            {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+
+    <pre>{{ docs }}</pre>
+    <pre>{{ tfidfs }}</pre>
+    <pre>{{ wq }}</pre>
+    <pre>{{ ranking }}</pre>
+
 {% endblock content %}
