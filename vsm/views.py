@@ -205,6 +205,7 @@ def query(request):
     tfidfs = []
     wq = []
     col_terms = []
+    ffn = {}
 
     if request.method == 'POST':
 
@@ -222,6 +223,7 @@ def query(request):
         vsm = VectorSpaceModel( buildCollectionPath(request) )
         vsm_table = vsm.generateVectorSpaceModel()
 
+        ffn = vsm.friendly_filenames                # save friendly filenames relation
         docs = vsm.file_list                        # documents list
         wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
         tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
@@ -232,10 +234,7 @@ def query(request):
         max_freq = 0
         query_terms = query_ii[0]
         for t in query_terms:
-            print(t, query_terms[t], query_terms[t][0], query_terms[t][0][1])
             max_freq = max(max_freq, query_terms[t][0][1])
-
-        print('max freq:', max_freq)
 
         for dn, doc in enumerate(docs):
             for tn, t in enumerate(vsm_table):
@@ -266,10 +265,12 @@ def query(request):
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'ranking': ranking,
-        'docs': docs,
-        'tfidfs': tfidfs,
-        'wq': wq,
         'terms': col_terms,
+        'tfidfs': tfidfs,
+        'query': query,
+        'docs': docs,
+        'ffn': ffn,
+        'wq': wq,
     }
 
     # build response
@@ -287,5 +288,7 @@ def index(sequence, position):
     return sequence[position]
 
 @register.filter
-def around(number):
-    return round(number, 3)
+def roundAndAround(number):
+    number = str(round(number, 3))
+    # reverse the string before and after applying zfill()
+    return number[::-1].zfill(5)[::-1]

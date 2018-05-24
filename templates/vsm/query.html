@@ -18,71 +18,96 @@
         </form>
     </div>
 
-    {% comment %} DOCS LIST {% endcomment %}
-    <div class="card">
-        <h3>DOCS</h3>
-        <ul>
-            {% for doc in docs %}
-            <li>{{ doc }}</li>
-            {% endfor %}
-        </ul>
+    <div class="row">
+
+        {% comment %} RANKING {% endcomment %}
+        {% if ranking %}
+        <div class="col-lg-8 col-md-12">
+            <div class="card">
+                <div class="block">
+                    <h3>Resultados</h3>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6"><div class="block"><h4>Similaridades</h4></div></div>
+                    <div class="col-xs-6"><div class="block"><h4>Documentos</h4></div></div>
+                </div>
+                {% for doc in ranking %}
+                <div class="row">
+                    <div class="col-xs-6">{{ doc.0|roundAndAround }}</div>
+                    <div class="col-xs-6">{{ ffn|get_item:doc.1 }}</div>
+                    <div class="col-xs-12"><hr></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="col-lg-12 col-md-12">
+            <div class="block">
+                <p class="obs">Pesquise um conjunto de termos sobre a coleção selecionada</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% comment %} DOCS LIST {% endcomment %}
+        {% if docs %}
+        <div class="col-lg-4 col-md-12">
+            <div class="card">
+                <h3>Coleção</h3>
+                <ul>
+                    {% for doc in docs %}
+                    <li>{{ ffn|get_item:doc }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 
     {% comment %} TFIDFS TABLE {% endcomment %}
-    <div class="card">
-        <h3>TFIDFS</h3>
-        <table>
+    {% if tfidfs %}
+    <div class="row">
 
-            {% comment %} TABLE HEADERS: DOC TITLES AND COLLECTION TERMS {% endcomment %}
-            <tr>
-                <th>DOC</th>
-                {% for tf in tfidfs %}
-                    {% if forloop.first %}
-                        {% for t in tf %}
-                            <th>{{ terms|index:forloop.counter0 }}</th>
+        <div class="col-lg-12">
+            <div class="card">
+                <h3>TFIDFS</h3>
+                <table>
+
+                    {% comment %} TABLE HEADERS: DOC TITLES AND COLLECTION TERMS {% endcomment %}
+                    <tr>
+                        <th>DOC</th>
+                        {% for tf in tfidfs %}
+                            {% if forloop.first %}
+                                {% for t in tf %}
+                                    <th>{{ terms|index:forloop.counter0 }}</th>
+                                {% endfor %}
+                            {% endif %}
                         {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </tr>
+                    </tr>
 
-            {% comment %} DOCS AND TERM FREQUENCIES {% endcomment %}
-            {% for doc in docs %}
-            <tr>
-                <td>{{ doc }}</td>
-                {% for tf in tfidfs|index:forloop.counter0 %}
-                    <td>{{ tf|around }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
+                    {% comment %} DOCS AND TERM FREQUENCIES {% endcomment %}
+                    {% for doc in docs %}
+                    <tr>
+                        <td>{{ ffn|get_item:doc }}</td>
+                        {% for tf in tfidfs|index:forloop.counter0 %}
+                            <td>{{ tf|roundAndAround }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
 
-            {% comment %} QUERY FREQUENCIES {% endcomment %}
-            <tr>
-                <td><strong><em>CONSULTA</em></strong></td>
-            {% for w in wq %}
-                <td>{{ w }}</td>
-            {% endfor %}
-            </tr>
+                    {% comment %} QUERY FREQUENCIES {% endcomment %}
+                    <tr>
+                        <td><strong><em>CONSULTA</em></strong></td>
+                    {% for w in wq %}
+                        <td>{{ w|roundAndAround }}</td>
+                    {% endfor %}
+                    </tr>
 
-        </table>
+                </table>
+            </div>
+        </div>
+
     </div>
-
-    {% comment %} RANKING {% endcomment %}
-    <div class="card">
-        <div class="block">
-            <h3>Resultados</h3>
-        </div>
-        <div class="row">
-            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6"><h4 class="block">Similaridades</h4></div>
-            <div class="col-lg-10 col-md-9 col-sm-8 col-xs-6"><h4 class="block">Documentos</h4></div>
-        </div>
-        {% for doc in ranking %}
-        <div class="row">
-            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">{{ doc.0 }}</div>
-            <div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">{{ doc.1 }}</div>
-            <div class="col-lg-12"><hr></div>
-        </div>
-        {% endfor %}
-    </div>
-
+    {% endif %}
 
 {% endblock content %}
