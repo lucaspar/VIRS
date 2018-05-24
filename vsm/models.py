@@ -19,7 +19,8 @@ def validate_corpus_size(value):
 # Documents Collection model
 class Collection(models.Model):
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=50)
+    id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title       = models.CharField(max_length=50)
     description = models.CharField(max_length=300, blank=True)
     corpus_size = models.IntegerField(validators=[validate_corpus_size])
+    read_only   = models.BooleanField(default=False)

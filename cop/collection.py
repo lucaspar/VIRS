@@ -24,7 +24,7 @@ class Collection(object):
     # Get a file list from @path with extension @ext
     def getFileList(self, ext='txt'):
         files  = os.listdir(self.collection_path)
-        texts = [_file for _file in files if _file.endswith("." + ext)]
+        texts = [_file for _file in files]
         return texts
 
 
