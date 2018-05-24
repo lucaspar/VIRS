@@ -91,6 +91,7 @@ def home(request):
 
     context = {
         'title': 'Visualization and Information Retrieval System',
+        'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
         'collection_wheel': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
