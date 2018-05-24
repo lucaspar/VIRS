@@ -17,6 +17,7 @@ from .models import Collection
 
 import os
 import json
+import math
 import urllib
 
 SEL_COLLECTION_COOKIE = 'sel_collection'
@@ -231,10 +232,12 @@ def query(request):
             print(t, terms[t], terms[t][0], terms[t][0][1])
             max_freq = max(max_freq, terms[t][0][1])
 
+        print('max freq:', max_freq)
         for tn, t in enumerate(terms):
             freq = terms[t][0][1]
-            if freq > 0:
-                wq[tn] = 0.5 + ( 0.5 * freq / max_freq ) * vsm_table[t]['idf']
+            if freq > 0 and t in vsm_table:
+                print('idf:', vsm_table[t]['idf'])
+                wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
             else:
                 wq[tn] = 0
 
@@ -269,3 +272,11 @@ def query(request):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
+@register.filter
+def index(sequence, position):
+    return sequence[position]
+
+@register.filter
+def around(number):
+    return round(number, 3)

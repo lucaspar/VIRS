@@ -4,6 +4,7 @@ import math
 
 class Similarity:
 
+    # computes the similarity between weights (TFIDFs) of a document and a query
     def sim(self, wd, wq):
 
         doc_length = len(wd)
@@ -29,10 +30,11 @@ class Similarity:
 
         return sim
 
+    # computes similarities and sort documents for ranking
     def calculate_rank(self, docs, docs_tfidf, query_w):
         rank = []
         for doc, tfidf in zip(docs, docs_tfidf):
             similarity = self.sim(tfidf, query_w)
             rank.append((similarity, doc))
-        rank.sort()
+        rank.sort(reverse=True)
         return rank
