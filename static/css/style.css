@@ -35,11 +35,18 @@ td, th {
     white-space: nowrap;
     padding: 10px;
 }
+tr {
+    height: 3em;
+    border-bottom: 1px solid #ddd;
+}
+tr:hover {
+    background-color: #f2f2f2;
+}
 .navbar {
     border-radius: 0;
 }
 .border-table td, .border-table th {
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #ddd;
 }
 .block {
     padding: 1em 0 1.5em 0;

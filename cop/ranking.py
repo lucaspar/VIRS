@@ -2,9 +2,10 @@ from cop.collection import Collection
 from collections import deque
 import math
 
-class Similarity:
+# Similarities and ranking computation
+class Ranking:
 
-    # computes the similarity between weights (TFIDFs) of a document and a query
+    # computes the cosine similarity between weights (TFIDFs) of a document and a query
     def sim(self, wd, wq):
 
         doc_length = len(wd)

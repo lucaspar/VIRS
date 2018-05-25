@@ -1,13 +1,20 @@
+from django.conf import settings
+
 from cop.invertedIndex import InvertedIndex
+from cop.ranking import Ranking
 from collections import deque
+
+import time
 import math
+import os
 
 # Creates the Vector Space Model representation of a collection
 class VectorSpaceModel(object):
 
     def __init__(self, collection_path):
 
-        self.K = 0      # Double normalization for TFIDF calculation
+        self.KAPPA = 0      # Double normalization for TFIDF calculation for DOCUMENTS
+        self.ALPHA = 0.5    # Double normalization for TFIDF calculation for QUERY
 
         # set collection path
         self.collection_path = collection_path
@@ -22,7 +29,7 @@ class VectorSpaceModel(object):
 
     # Calculates the normalized term frequency given a tf and a maximum tf
     def normalized_tf(self, tf, max_tf):
-        return self.K + (1.0-self.K) * tf / max_tf
+        return self.KAPPA + (1.0-self.KAPPA) * tf / max_tf
 
     def generateVectorSpaceModel(self):
 
@@ -32,8 +39,8 @@ class VectorSpaceModel(object):
             term1 {
                 df:    df,
                 idf:   idf,
-                tf:    [d1, d2, d3, ...],
-                tfidf: [d1, d2, d3, ...],
+                tf:    [ d1, d2, d3, ... ],
+                tfidf: [ d1, d2, d3, ... ],
             }
             term2 {
                 df:    df,
@@ -88,3 +95,72 @@ class VectorSpaceModel(object):
                 vsm[t]['tfidf'][doc_index] = ntf * vsm[t]['idf']
 
         return vsm
+
+    def tfidf_calc(self, freq, max_freq, idf):
+        return 0 if max_freq is 0 else (  ( self.ALPHA + ((1-self.ALPHA) * freq / max_freq) ) * idf  )
+
+    # Processes a query on this object's collection
+    # Returns a dictionary with the document ranking and other information
+    def processQuery(self, query):
+
+        # save query for processing
+        filepath = os.path.join(settings.USER_QUERIES, str(time.time()))
+
+        # make dir if it does not exist
+        if not os.path.exists( filepath ):
+            os.makedirs(filepath)
+
+        # write query to file
+        with open(os.path.join(filepath, "query"), "w", errors='replace') as file:
+            file.write(str(query))
+
+        # process tokens in saved query
+        query_ii_obj = InvertedIndex(filepath)
+        query_terms = query_ii_obj.generatePostingsList()[0]
+
+        # process selected collection
+        vsm_table = self.generateVectorSpaceModel()
+
+        ffn = self.friendly_filenames                       # save friendly filenames relation
+        wq = [0] * len(vsm_table)                           # query terms weights (TFIDFs)
+        tfidfs = [[] for i in range(len(self.file_list))]   # documents terms weights (TFIDFs)
+        terms = ['' for i in range(len(vsm_table))]         # terms list
+
+        # calculate maximum frequency of a term in the query
+        max_freq = 0
+        for t in query_terms:
+            max_freq = max(max_freq, query_terms[t][0][1])
+
+        # calculate query weights (TFIDFs)
+        for dn, doc in enumerate(self.file_list):
+            for tn, t in enumerate(vsm_table):
+
+                # copy term to list for output
+                terms[tn] = t
+
+                # calculate term's tfidf in query (first pass only)
+                if dn is 0:
+                    freq = query_terms[t][0][1] if t in query_terms else 0
+                    if freq > 0 and t in vsm_table:
+                        wq[tn] = self.tfidf_calc(freq, max_freq, vsm_table[t]['idf'])
+                    else:
+                        wq[tn] = 0
+
+                # append to tfidfs
+                tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
+
+        # with TFIDFs of docs and query (wq), calculate ranking
+        sim = Ranking()
+        ranking = sim.calculate_rank(self.file_list, tfidfs, wq)
+
+        # build output dictionary
+        outputs = {
+            'ranking': ranking,
+            'tfidfs': tfidfs,
+            'terms': terms,
+            'docs': self.file_list,
+            'ffn': self.friendly_filenames,
+            'wq': wq,
+        }
+
+        return outputs

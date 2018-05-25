@@ -9,7 +9,6 @@ from django.conf import settings
 
 from cop.invertedIndex import InvertedIndex
 from cop.vectorSpaceModel import VectorSpaceModel
-from cop.similarity import Similarity
 from .storage import handle_uploaded_files
 from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
@@ -212,87 +211,39 @@ def vsm(request):
 # Handles user searches over a collection
 def query(request):
 
-    col_terms = []
-    ranking = []
-    tfidfs = []
     query = ''
-    docs = []
-    ffn = {}
-    wq = []
+    outputs = {
+        'ranking': [],
+        'tfidfs': [],
+        'terms': [],
+        'docs': [],
+        'ffn': {},
+        'wq': [],
+    }
 
     if request.method == 'POST':
 
+        query = request.POST.get('query')
         collection_path = buildCollectionPath(request)
-        if collection_path:
 
-            # save query for processing
-            query = request.POST.get('query')
-            filepath = os.path.join(settings.USER_QUERIES, str(time.time()))
-
-            # make dir if it does not exist
-            if not os.path.exists( filepath ):
-                os.makedirs(filepath)
-
-            # write query to file
-            with open(os.path.join(filepath, "query"), "w", errors='replace') as file:
-                file.write(str(query))
-
-            # process tokens in saved query
-            query_ii_obj = InvertedIndex(filepath)
-            query_ii = query_ii_obj.generatePostingsList()
-
-            # process selected collection
+        # get collection path and process query
+        if collection_path and query:
             vsm = VectorSpaceModel( collection_path )
-            vsm_table = vsm.generateVectorSpaceModel()
-
-            ffn = vsm.friendly_filenames                # save friendly filenames relation
-            docs = vsm.file_list                        # documents list
-            wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
-            tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
-
-            col_terms = ['' for i in range(len(vsm_table))]
-
-            # calculate query weights
-            max_freq = 0
-            query_terms = query_ii[0]
-            for t in query_terms:
-                max_freq = max(max_freq, query_terms[t][0][1])
-
-            for dn, doc in enumerate(docs):
-                for tn, t in enumerate(vsm_table):
-
-                    col_terms[tn] = t
-
-                    # calculate term's tfidf in query
-                    freq = query_terms[t][0][1] if t in query_terms else 0
-                    if freq > 0 and t in vsm_table:
-                        print('idf:', vsm_table[t]['idf'])
-                        wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
-                    else:
-                        wq[tn] = 0
-
-                    # append to tfidfs
-                    tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
-                    # if t in query_vsm:
-                    #     print(query_vsm[t])
-                    #     wq[tn] = query_vsm[t]['tfidf'][0]
-
-            sim = Similarity()
-            ranking = sim.calculate_rank(docs, tfidfs, wq)
+            outputs = vsm.processQuery(query)
 
     context = {
-        'title': 'Consulta',
-        'reference': 'https://en.wikipedia.org/wiki/Cosine_similarity',
+        'title'     : 'Consulta',
+        'reference' : 'https://en.wikipedia.org/wiki/Cosine_similarity',
         'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
-        'ranking': ranking,
-        'terms': col_terms,
-        'tfidfs': tfidfs,
-        'query': query,
-        'docs': docs,
-        'ffn': ffn,
-        'wq': wq,
+        'query'     : query,
+        'ranking'   : outputs['ranking'],
+        'tfidfs'    : outputs['tfidfs'],
+        'terms'     : outputs['terms'],
+        'docs'      : outputs['docs'],
+        'ffn'       : outputs['ffn'],
+        'wq'        : outputs['wq'],
     }
 
     # build response
