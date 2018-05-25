@@ -42,12 +42,11 @@ def handleCollectionPost(request):
 
 # Builds a collection's filesystem path from cookie
 def buildCollectionPath(request):
-    current_collection = request.COOKIES.get(SEL_COLLECTION_COOKIE, False)
-    if current_collection:
-        # TODO: validate collection uuid from cookie
+    collection_path = None
+    current_collection = request.COOKIES.get(SEL_COLLECTION_COOKIE, None)
+    # check whether the object exists in database
+    if current_collection and Collection.objects.get(pk=current_collection):
         collection_path = os.path.join(settings.COLLECTION_UPLOADS, current_collection)
-    else:
-        collection_path = "/virs/collection/"       # default fallback
     return collection_path
 
 def standardResponse(request, context, template_path):
@@ -146,9 +145,14 @@ def upload(request):
 # Shows a collection's Postings List
 def postings(request):
 
+    postings = []
+    friendly_filenames = {}
+
     # load collection
-    ii = InvertedIndex( buildCollectionPath(request) )
-    postings, friendly_filenames = ii.generatePostingsList()
+    collection_path = buildCollectionPath(request)
+    if collection_path:
+        ii = InvertedIndex( collection_path )
+        postings, friendly_filenames = ii.generatePostingsList()
 
     # pass computed data in context
     context = {
@@ -167,21 +171,27 @@ def postings(request):
 # Shows a collection's Vector Space Model
 def vsm(request):
 
-    vsm = VectorSpaceModel( buildCollectionPath(request) )
-    vsm_table = vsm.generateVectorSpaceModel()
-
-    # form table headers
+    vsm_table = {}
     headers = []
-    for term, value in vsm_table.items():
-        for header, v in value.items():
-            if header is 'tf' or header is 'tfidf':
-                th = '[F]' if header is 'tf' else '[TF×IDF]'
-                for c in range(0, len(v)):
-                    ffn = vsm.friendly_filenames[vsm.file_list[c]]
-                    headers.append(th.upper() + ' ' + ffn)
-            else:
-                headers.append(header.upper())
-        break
+    vsm = None
+
+    collection_path = buildCollectionPath(request)
+    if collection_path:
+
+        vsm = VectorSpaceModel( collection_path )
+        vsm_table = vsm.generateVectorSpaceModel()
+
+        # form table headers
+        for term, value in vsm_table.items():
+            for header, v in value.items():
+                if header is 'tf' or header is 'tfidf':
+                    th = '[F]' if header is 'tf' else '[TF×IDF]'
+                    for c in range(0, len(v)):
+                        ffn = vsm.friendly_filenames[vsm.file_list[c]]
+                        headers.append(th.upper() + ' ' + ffn)
+                else:
+                    headers.append(header.upper())
+            break
 
     # pass computed data in context
     context = {
@@ -191,7 +201,7 @@ def vsm(request):
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'vsm': vsm_table,
         'headers': headers,
-        'friendly_filenames': vsm.friendly_filenames,
+        'friendly_filenames': vsm.friendly_filenames if vsm else {},
     }
 
     # build response
@@ -212,60 +222,63 @@ def query(request):
 
     if request.method == 'POST':
 
-        # save query for processing
-        query = request.POST.get('query')
-        filepath = os.path.join(settings.USER_QUERIES, str(time.time()))
+        collection_path = buildCollectionPath(request)
+        if collection_path:
 
-        # make dir if it does not exist
-        if not os.path.exists( filepath ):
-            os.makedirs(filepath)
+            # save query for processing
+            query = request.POST.get('query')
+            filepath = os.path.join(settings.USER_QUERIES, str(time.time()))
 
-        # write query to file
-        with open(os.path.join(filepath, "query"), "w", errors='replace') as file:
-            file.write(str(query))
+            # make dir if it does not exist
+            if not os.path.exists( filepath ):
+                os.makedirs(filepath)
 
-        # process tokens in saved query
-        query_ii_obj = InvertedIndex(filepath)
-        query_ii = query_ii_obj.generatePostingsList()
+            # write query to file
+            with open(os.path.join(filepath, "query"), "w", errors='replace') as file:
+                file.write(str(query))
 
-        # process selected collection
-        vsm = VectorSpaceModel( buildCollectionPath(request) )
-        vsm_table = vsm.generateVectorSpaceModel()
+            # process tokens in saved query
+            query_ii_obj = InvertedIndex(filepath)
+            query_ii = query_ii_obj.generatePostingsList()
 
-        ffn = vsm.friendly_filenames                # save friendly filenames relation
-        docs = vsm.file_list                        # documents list
-        wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
-        tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
+            # process selected collection
+            vsm = VectorSpaceModel( collection_path )
+            vsm_table = vsm.generateVectorSpaceModel()
 
-        col_terms = ['' for i in range(len(vsm_table))]
+            ffn = vsm.friendly_filenames                # save friendly filenames relation
+            docs = vsm.file_list                        # documents list
+            wq = [0] * len(vsm_table)                   # query terms weights (TFIDFs)
+            tfidfs = [[] for i in range(len(docs))]     # documents terms weights (TFIDFs)
 
-        # calculate query weights
-        max_freq = 0
-        query_terms = query_ii[0]
-        for t in query_terms:
-            max_freq = max(max_freq, query_terms[t][0][1])
+            col_terms = ['' for i in range(len(vsm_table))]
 
-        for dn, doc in enumerate(docs):
-            for tn, t in enumerate(vsm_table):
+            # calculate query weights
+            max_freq = 0
+            query_terms = query_ii[0]
+            for t in query_terms:
+                max_freq = max(max_freq, query_terms[t][0][1])
 
-                col_terms[tn] = t
+            for dn, doc in enumerate(docs):
+                for tn, t in enumerate(vsm_table):
 
-                # calculate term's tfidf in query
-                freq = query_terms[t][0][1] if t in query_terms else 0
-                if freq > 0 and t in vsm_table:
-                    print('idf:', vsm_table[t]['idf'])
-                    wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
-                else:
-                    wq[tn] = 0
+                    col_terms[tn] = t
 
-                # append to tfidfs
-                tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
-                # if t in query_vsm:
-                #     print(query_vsm[t])
-                #     wq[tn] = query_vsm[t]['tfidf'][0]
+                    # calculate term's tfidf in query
+                    freq = query_terms[t][0][1] if t in query_terms else 0
+                    if freq > 0 and t in vsm_table:
+                        print('idf:', vsm_table[t]['idf'])
+                        wq[tn] = ( 0.5 + ( 0.5 * freq / max_freq ) ) * vsm_table[t]['idf']
+                    else:
+                        wq[tn] = 0
 
-        sim = Similarity()
-        ranking = sim.calculate_rank(docs, tfidfs, wq)
+                    # append to tfidfs
+                    tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
+                    # if t in query_vsm:
+                    #     print(query_vsm[t])
+                    #     wq[tn] = query_vsm[t]['tfidf'][0]
+
+            sim = Similarity()
+            ranking = sim.calculate_rank(docs, tfidfs, wq)
 
     context = {
         'title': 'Consulta',
