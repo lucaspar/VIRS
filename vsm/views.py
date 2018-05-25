@@ -231,6 +231,8 @@ def query(request):
             vsm = VectorSpaceModel( collection_path )
             outputs = vsm.processQuery(query)
 
+            print(outputs['wq'])
+
     context = {
         'title'     : 'Consulta',
         'reference' : 'https://en.wikipedia.org/wiki/Cosine_similarity',

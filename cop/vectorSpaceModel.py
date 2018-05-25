@@ -14,7 +14,7 @@ class VectorSpaceModel(object):
     def __init__(self, collection_path):
 
         self.KAPPA = 0      # Double normalization for TFIDF calculation for DOCUMENTS
-        self.ALPHA = 0    # Double normalization for TFIDF calculation for QUERY
+        self.ALPHA = 0.5    # Double normalization for TFIDF calculation for QUERY
 
         # set collection path
         self.collection_path = collection_path
@@ -138,12 +138,13 @@ class VectorSpaceModel(object):
                 # copy term to list for output
                 terms[tn] = t
 
-                # calculate term's tfidf in query
-                freq = query_terms[t][0][1] if t in query_terms else 0
-                if freq > 0 and t in vsm_table:
-                    wq[tn] = self.tfidf_calc(freq, max_freq, vsm_table[t]['idf'])
-                else:
-                    wq[tn] = 0
+                # calculate term's tfidf in query (first pass only)
+                if dn is 0:
+                    freq = query_terms[t][0][1] if t in query_terms else 0
+                    if freq > 0 and t in vsm_table:
+                        wq[tn] = self.tfidf_calc(freq, max_freq, vsm_table[t]['idf'])
+                    else:
+                        wq[tn] = 0
 
                 # append to tfidfs
                 tfidfs[dn].append(vsm_table[t]['tfidf'][dn])
