@@ -279,6 +279,7 @@ def pagerank(request):
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'evolution': evolution,
+        'js_evolution': json.dumps(evolution),
         'friendly_filenames': friendly_filenames,
         'err_threshold': err_threshold,
         'alpha': alpha,
