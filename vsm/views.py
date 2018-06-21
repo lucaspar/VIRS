@@ -254,18 +254,19 @@ def query(request):
 # Compute collection's PageRank
 def pagerank(request):
 
-    graph = []
+    evolution = []
     friendly_filenames = {}
 
     # load collection
     collection_path = buildCollectionPath(request)
     if collection_path:
         pr = PageRank( collection_path )
-        graph = pr.finalPageRank()
+        evolution = pr.finalPageRank()
         friendly_filenames = pr.friendly_filenames
 
-        for doc, val in graph.items():
-            print(friendly_filenames[doc], ': PR =', val['PR'])
+        # for idx, graph in enumerate(evolution):
+        #     for doc, val in graph.items():
+        #         print(friendly_filenames[doc], ': PR =', val['PR'])
 
     # pass computed data in context
     context = {
@@ -273,7 +274,7 @@ def pagerank(request):
         'reference': 'https://en.wikipedia.org/wiki/PageRank',
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
-        'graph': graph,
+        'evolution': evolution,
         'friendly_filenames': friendly_filenames,
     }
 

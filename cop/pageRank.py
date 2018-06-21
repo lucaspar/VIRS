@@ -1,6 +1,7 @@
 from cop.collection import Collection
 from bs4 import BeautifulSoup
 import collections
+import copy
 import os
 
 #Create the page ranking of a collection
@@ -105,25 +106,31 @@ class PageRank(object):
 
     # set PRs for all nodes until stabilize
     def finalPageRank(self):
+
+        evolution = [ copy.deepcopy(self.node) ]
+
         # control
-        check = 0
+        converged = False
 
         # loop to check all error
-        while check != 1:
-            check = 1
+        while not converged:
 
+            converged = True
             # for all nodes, calc PR
             for key, values in self.node.items():
                 if self.setPRNode(key) == 0 :
-                    check = 0
+                    converged = False
 
-        # sort dict by PR score (reversed)
-        self.node = collections.OrderedDict(
-            sorted(
-                self.node.items(),
-                reverse=True,
-                key=lambda node: node[1]['PR'])
+            # sort dict by PR score (reversed)
+            self.node = collections.OrderedDict(
+                sorted(
+                    self.node.items(),
+                    reverse=True,
+                    key=lambda node: node[1]['PR']
+                )
             )
 
-        # return graph
-        return self.node
+            evolution.append(copy.deepcopy(self.node))
+
+        # return graph evolution
+        return evolution
