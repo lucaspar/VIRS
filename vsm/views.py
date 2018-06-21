@@ -257,16 +257,20 @@ def pagerank(request):
     evolution = []
     friendly_filenames = {}
 
+    # default PageRank parameters
+    alpha = 0.1
+    err_threshold = 0.01
+
+    if request.method == 'POST':
+        err_threshold   = float(request.POST.get('err_threshold'))
+        alpha           = float(request.POST.get('alpha'))
+
     # load collection
     collection_path = buildCollectionPath(request)
     if collection_path:
-        pr = PageRank( collection_path )
+        pr = PageRank( collection_path, err_threshold, alpha )
         evolution = pr.finalPageRank()
         friendly_filenames = pr.friendly_filenames
-
-        # for idx, graph in enumerate(evolution):
-        #     for doc, val in graph.items():
-        #         print(friendly_filenames[doc], ': PR =', val['PR'])
 
     # pass computed data in context
     context = {
@@ -276,6 +280,8 @@ def pagerank(request):
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'evolution': evolution,
         'friendly_filenames': friendly_filenames,
+        'err_threshold': err_threshold,
+        'alpha': alpha,
     }
 
     # build response
