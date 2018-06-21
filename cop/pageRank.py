@@ -24,12 +24,8 @@ class PageRank(object):
         # create a dict that all methods can use
         self.node = self.getStructure()
 
-        # sort dict by key
-        # self.node = collections.OrderedDict(sorted(self.node.items()))
-
         # get number of files in collection
         self.N = len(self.file_list)
-
 
     # get links of the file in file list
     def getLinksOfFile(self, filename):
@@ -45,6 +41,7 @@ class PageRank(object):
             # get href data and append in a list
             if link.get('href') not in links:
                 links.append(link.get('href'))
+
         return links
 
     # get all reference of the file in file list
@@ -52,15 +49,15 @@ class PageRank(object):
         docs = []
         for _file in self.file_list:
 
-            #open doc xml format
+            # open doc xml format
             doc = open(os.path.join(self.collection_path, _file))
             soup = BeautifulSoup(doc, "lxml")
 
-            #find tag <a> in html page
+            # find tag <a> in html page
             for link in soup.find_all('a'):
 
-                #save doc if referende filename in href data
-                if link.get('href') == filename:
+                # save doc if reference filename in href data
+                if link.get('href') == self.friendly_filenames[filename]:
                     docs.append(_file)
                     break
         return docs
@@ -119,3 +116,14 @@ class PageRank(object):
             for key, values in self.node.items():
                 if self.setPRNode(key) == 0 :
                     check = 0
+
+        # sort dict by PR score (reversed)
+        self.node = collections.OrderedDict(
+            sorted(
+                self.node.items(),
+                reverse=True,
+                key=lambda node: node[1]['PR'])
+            )
+
+        # return graph
+        return self.node

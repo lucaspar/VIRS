@@ -261,7 +261,7 @@ def pagerank(request):
     collection_path = buildCollectionPath(request)
     if collection_path:
         pr = PageRank( collection_path )
-        graph = pr.node
+        graph = pr.finalPageRank()
         friendly_filenames = pr.friendly_filenames
 
         for doc, val in graph.items():
