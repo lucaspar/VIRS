@@ -8,6 +8,7 @@ urlpatterns = [
     path('arquivo_invertido',   views.postings,             name='postings'),
     path('modelo_vetorial',     views.vsm,                  name='vsm'),
     path('pesquisa',            views.query,                name='query'),
+    path('pagerank',            views.pagerank,             name='pagerank'),
     path('remover_colecao',     views.delete,               name='delete_collection'),
     path('selecionar_colecao',  views.handleCollectionPost, name='select_collection'),
 ]

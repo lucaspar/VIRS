@@ -9,6 +9,7 @@ from django.conf import settings
 
 from cop.invertedIndex import InvertedIndex
 from cop.vectorSpaceModel import VectorSpaceModel
+from cop.pageRank import PageRank
 from .storage import handle_uploaded_files
 from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
@@ -248,6 +249,36 @@ def query(request):
 
     # build response
     return standardResponse(request, context, 'vsm/query.html')
+
+# ----------------------------------------
+# Compute collection's PageRank
+def pagerank(request):
+
+    graph = []
+    friendly_filenames = {}
+
+    # load collection
+    collection_path = buildCollectionPath(request)
+    if collection_path:
+        pr = PageRank( collection_path )
+        graph = pr.node
+        friendly_filenames = pr.friendly_filenames
+
+        for doc, val in graph.items():
+            print(friendly_filenames[doc], ': PR =', val['PR'])
+
+    # pass computed data in context
+    context = {
+        'title': 'PageRank',
+        'reference': 'https://en.wikipedia.org/wiki/PageRank',
+        'collections': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'graph': graph,
+        'friendly_filenames': friendly_filenames,
+    }
+
+    # build response
+    return standardResponse(request, context, 'vsm/pagerank.html')
 
 # ----------------------------------------
 #            TEMPLATING METHODS

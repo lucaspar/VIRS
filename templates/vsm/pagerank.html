@@ -5,7 +5,7 @@
 {% block content %}
     <div class="row">
 
-        {% if postings %}
+        {% if graph %}
 
         <div class="col-lg-12">
             <div class='col-md-2 col-sm-3 col-xs-4 postings'>
@@ -16,9 +16,9 @@
             <div class='col-md-10 col-sm-9 col-xs-8 postings'>
                 <div class='col-sm-12 postings-line'>
                     <div class="cell separator"><div class="fas fa-fw fa-lg fa-long-arrow-alt-right"></div></div>
-                    <div class='cell df header'>DF</div>
+                    <div class='cell df header'>PR Score</div>
                     <div class="cell separator"><div class="fas fa-fw fa-lg fa-long-arrow-alt-right"></div></div>
-                    <div class='cell header'>Frequências por Documento</div>
+                    <div class='cell header'>Documentos apontados</div>
                 </div>
             </div>
         </div>
@@ -27,21 +27,24 @@
 
         <div class='col-lg-12'>
             <div class='col-md-2 col-sm-3 col-xs-4 postings'>
-                {% for token, values in postings.items %}
+                {% for doc, values in graph.items %}
                 <div class="postings-line postings-token">
-                    <div class='cell token'>{{ token }}</div>
+                    <a href="/static/{{ sel_collection }}/{{ doc }}">
+                        <div class='cell token'>
+                            {{ friendly_filenames|get_item:doc }}
+                        </div>
+                    </a>
                 </div>
                 {% endfor %}
             </div>
             <div class='col-md-10 col-sm-9 col-xs-8 postings'>
-                {% for token, values in postings.items %}
+                {% for doc, values in graph.items %}
                     <div class='col-xs-12 postings-line'>
                         <div class="cell separator"><div class="fas fa-fw fa-lg fa-long-arrow-alt-right"></div></div>
-                        <div class='cell df'>{{ values|length }}</div>
-                        {% for value in values %}
+                        <div class='cell df'>{{ values.PR }}</div>
+                        {% for ref in values.Li %}
                         <div class="cell separator"><div class="fas fa-fw fa-lg fa-long-arrow-alt-right"></div></div>
-                        <div class='cell doc'>{{ friendly_filenames|get_item:value.0 }}</div>
-                        <div class='cell tf'>{{ value.1 }}</div>
+                        <div class='cell'>{{ ref }}</div>
                         {% endfor %}
                     </div>
                 {% endfor %}
