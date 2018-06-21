@@ -9,6 +9,7 @@ from django.conf import settings
 
 from cop.invertedIndex import InvertedIndex
 from cop.vectorSpaceModel import VectorSpaceModel
+from cop.pageRank import PageRank
 from .storage import handle_uploaded_files
 from .forms import CollectionUploadForm
 from .decorators import check_recaptcha
@@ -248,6 +249,44 @@ def query(request):
 
     # build response
     return standardResponse(request, context, 'vsm/query.html')
+
+# ----------------------------------------
+# Compute collection's PageRank
+def pagerank(request):
+
+    evolution = []
+    friendly_filenames = {}
+
+    # default PageRank parameters
+    alpha = 0.1
+    err_threshold = 0.01
+
+    if request.method == 'POST':
+        err_threshold   = float(request.POST.get('err_threshold'))
+        alpha           = float(request.POST.get('alpha'))
+
+    # load collection
+    collection_path = buildCollectionPath(request)
+    if collection_path:
+        pr = PageRank( collection_path, err_threshold, alpha )
+        evolution = pr.finalPageRank()
+        friendly_filenames = pr.friendly_filenames
+
+    # pass computed data in context
+    context = {
+        'title': 'PageRank',
+        'reference': 'https://en.wikipedia.org/wiki/PageRank',
+        'collections': list(Collection.objects.all()),
+        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'evolution': evolution,
+        'js_evolution': json.dumps(evolution),
+        'friendly_filenames': friendly_filenames,
+        'err_threshold': err_threshold,
+        'alpha': alpha,
+    }
+
+    # build response
+    return standardResponse(request, context, 'vsm/pagerank.html')
 
 # ----------------------------------------
 #            TEMPLATING METHODS
