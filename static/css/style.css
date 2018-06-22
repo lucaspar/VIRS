@@ -121,6 +121,11 @@ tr:hover {
     min-width: 5em;
     color: white;
 }
+a .cell.token {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+}
 .cell.tf {
     font-family: 'Courier New', Courier, monospace;
     border-radius: 0 10px 10px 0 ;

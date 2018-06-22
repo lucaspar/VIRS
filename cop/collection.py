@@ -21,8 +21,8 @@ class Collection(object):
                 nltk.data.path.append(NLTK_DATA_PATH)
             nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
 
-    # Get a file list from @path with extension @ext
-    def getFileList(self, ext='txt'):
+    # Get a file list from @path
+    def getFileList(self):
         files  = os.listdir(self.collection_path)
         texts = [_file for _file in files]
         return texts
