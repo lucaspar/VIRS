@@ -67,7 +67,7 @@ def delete(request):
             # get collection from DB
             col = Collection.objects.get(pk=uuid)
             if (col.read_only):
-                messages.error(request, 'Não é possível remover esta coleção')
+                messages.error(request, 'It is not possible to delete this collection')
                 return redirect('home')
 
             # make dir if does not exist
@@ -85,11 +85,11 @@ def delete(request):
             col.delete()
 
             # message visitor
-            messages.success(request, 'Coleção removida')
+            messages.success(request, 'Collection deleted')
 
         # collection not in database
         except Collection.DoesNotExist:
-            messages.error(request, 'Coleção inexistente')
+            messages.error(request, 'Collection does not exist')
 
     return redirect('home')
 
@@ -97,10 +97,10 @@ def delete(request):
 def home(request):
 
     context = {
-        'title': 'Visualization and Information Retrieval System',
-        'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
-        'collection_wheel': list(Collection.objects.all()),
-        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'title'                         : 'Visualization and Information Retrieval System',
+        'GOOGLE_RECAPTCHA_PUBLIC_KEY'   : settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+        'collection_wheel'              : list(Collection.objects.all()),
+        'sel_collection'                : request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
     }
 
     return render(request, 'vsm/index.html', context)
@@ -127,13 +127,13 @@ def upload(request):
 
             # save model to database
             model.save()
-            messages.success(request, 'Nova coleção adicionada')
+            messages.success(request, 'New collection created')
 
             return redirect('home')
 
     # handle other requests or POST failure
     context = {
-        'title': 'Upload de Coleção',
+        'title': 'Upload Collection',
         'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
     }
 
@@ -156,11 +156,11 @@ def postings(request):
 
     # pass computed data in context
     context = {
-        'title': 'Arquivo Invertido',
-        'reference': 'https://pt.wikipedia.org/wiki/Listas_invertidas',
-        'collections': list(Collection.objects.all()),
-        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
-        'postings': postings,
+        'title'             : 'Inverted Index',
+        'reference'         : 'https://en.wikipedia.org/wiki/Inverted_index',
+        'collections'       : list(Collection.objects.all()),
+        'sel_collection'    : request.COOKIES.get(SEL_COLLECTION_COOKIE, ''),
+        'postings'          : postings,
         'friendly_filenames': friendly_filenames,
     }
 
@@ -195,8 +195,8 @@ def vsm(request):
 
     # pass computed data in context
     context = {
-        'title': 'Modelo Vetorial',
-        'reference': 'https://pt.wikipedia.org/wiki/Modelo_vetorial_em_sistemas_de_recupera%C3%A7%C3%A3o_da_informa%C3%A7%C3%A3o',
+        'title': 'Vector Space Model',
+        'reference': 'https://en.wikipedia.org/wiki/Vector_space_model',
         'collections': list(Collection.objects.all()),
         'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
         'vsm': vsm_table,
@@ -233,7 +233,7 @@ def query(request):
             outputs = vsm.processQuery(query)
 
     context = {
-        'title'     : 'Consulta',
+        'title'     : 'Search',
         'reference' : 'https://en.wikipedia.org/wiki/Cosine_similarity',
         'GOOGLE_RECAPTCHA_PUBLIC_KEY': settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
         'collections': list(Collection.objects.all()),
@@ -274,15 +274,15 @@ def pagerank(request):
 
     # pass computed data in context
     context = {
-        'title': 'PageRank',
-        'reference': 'https://en.wikipedia.org/wiki/PageRank',
-        'collections': list(Collection.objects.all()),
-        'sel_collection': request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
-        'evolution': evolution,
-        'js_evolution': json.dumps(evolution),
-        'friendly_filenames': friendly_filenames,
-        'err_threshold': err_threshold,
-        'alpha': alpha,
+        'title':                'PageRank',
+        'reference':            'https://en.wikipedia.org/wiki/PageRank',
+        'collections':          list(Collection.objects.all()),
+        'sel_collection':       request.COOKIES.get(SEL_COLLECTION_COOKIE,''),
+        'evolution':            evolution,
+        'js_evolution':         json.dumps(evolution),
+        'friendly_filenames':   friendly_filenames,
+        'err_threshold':        err_threshold,
+        'alpha':                alpha,
     }
 
     # build response

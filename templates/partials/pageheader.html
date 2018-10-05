@@ -6,7 +6,7 @@
     {% endif %}
             <h2>{{ title }}</h2>
             {% if reference %}
-            <a href="{{ reference }}" target="_blank">Mais informações <i class="fas fa-fw fa-external-link-alt"></i></a>
+            <a href="{{ reference }}" target="_blank">More info <i class="fas fa-fw fa-external-link-alt"></i></a>
             {% endif %}
         </div>
     {% if collections %}
@@ -19,7 +19,7 @@
                         {% if sel_collection == '' %}
                             selected
                         {% endif %}
-                            disabled>Escolha uma coleção</option>
+                            disabled>Select a collection</option>
 
                         {% for col in collections  %}
 
@@ -34,7 +34,7 @@
                     </select>
                 </div>
                 <div class="col-sm-4">
-                    <input type="submit" class="form-control btn btn-primary" value="Aplicar">
+                    <input type="submit" class="form-control btn btn-primary" value="Apply">
                 </div>
             </form>
         </div>
