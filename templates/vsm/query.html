@@ -8,11 +8,11 @@
 
     <div class="row">
 
-        <form id="query-form" action=pesquisa method="POST" enctype="multipart/form-data">
+        <form id="query-form" action=search method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="col-lg-6 col-md-8 col-sm-10 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 block">
                 <div class="input-group">
-                    <input style="text-align:center" type="text" class='form-control' name='query' placeholder="Consulta na Coleção" value="{{ query }}" required>
+                    <input style="text-align:center" type="text" class='form-control' name='query' placeholder="Search the collection" value="{{ query }}" required>
                     <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i>&nbsp</button>
                     </span>
@@ -28,11 +28,11 @@
         <div class="col-lg-8 col-md-12">
             <div class="card">
                 <div class="block">
-                    <h3>Resultados para <span class="query">{{ query }}</span></h3>
+                    <h3>Results for <span class="query">{{ query }}</span></h3>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6"><div class="block"><h4>Similaridades</h4></div></div>
-                    <div class="col-xs-6"><div class="block"><h4>Documentos</h4></div></div>
+                    <div class="col-xs-6"><div class="block"><h4>Similarity</h4></div><hr></div>
+                    <div class="col-xs-6"><div class="block"><h4>Document</h4></div><hr></div>
                 </div>
                 {% for doc in ranking %}
                 <div class="row">
@@ -46,8 +46,8 @@
         {% else %}
         <div class="col-lg-12 col-md-12">
             <div class="block">
-                <p class="obs">Pesquise um conjunto de termos sobre a coleção selecionada.</p>
-                <p class="obs">Os resultados são calculados sobre o modelo vetorial da coleção.</p>
+                <p class="obs">Search a set of tokens in the selected collection.</p>
+                <p class="obs">The results are calculated using the collection's vector space model.</p>
             </div>
         </div>
         {% endif %}
@@ -56,7 +56,7 @@
         {% if docs %}
         <div class="col-lg-4 col-md-12">
             <div class="card">
-                <h3>Coleção</h3>
+                <h3>Collection</h3>
                 <ul>
                     {% for doc in docs %}
                     <li>{{ ffn|get_item:doc }}</li>
@@ -75,7 +75,7 @@
         <div class="col-lg-12">
             <div style="overflow: auto;" class="card">
                 <div class="block">
-                    <h3>TF&timesIDF por termo</h3>
+                    <h3>TF&timesIDF by token</h3>
                 </div>
                 <table class="border-table">
 
@@ -109,7 +109,7 @@
 
                     {% comment %} QUERY FREQUENCIES {% endcomment %}
                     <tr>
-                        <td><strong><em>CONSULTA</em></strong></td>
+                        <td><strong><em>SEARCH</em></strong></td>
                     {% for w in wq %}
                         <td>
                             {% if w != 0 %}
@@ -132,7 +132,7 @@
 
         <div class="col-lg-12">
             <div class="block">
-                <p class="obs">Selecione uma coleção ou faça upload <a href="{% url 'home' %}">aqui</a>.</p>
+                <p class="obs">Select a collection or upload a new one <a href="{% url 'home' %}">here</a>.</p>
             </div>
         </div>
 

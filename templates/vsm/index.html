@@ -5,7 +5,7 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <h3>Comece escolhendo uma coleção</h3>
+            <h3>Start by selecting a collection...</h3>
             <div class="card">
                 <div class="col-sm-12">
                     <form action="{% url 'select_collection' %}" method="POST" enctype="multipart/form-data">
@@ -15,7 +15,7 @@
                                 {% if sel_collection == '' %}
                                     selected
                                 {% endif %}
-                                    disabled>Escolha uma coleção</option>
+                                    disabled>Select a document collection</option>
 
                                 {% for col in collection_wheel  %}
 
@@ -28,28 +28,28 @@
                                 {% endfor %}
                         </select>
                         <div class="form-group" style="text-align:center;">
-                            <input type="submit" class="btn btn-primary" value="Processar">
+                            <input type="submit" class="btn btn-primary" value="Confirm">
                         </div>
                     </form>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <h3>Ou faça o upload de uma nova</h3>
+            <h3>...or upload a new one</h3>
             <div class="card">
-                <p>O VIRS funciona melhor com arquivos de texto puro (.txt).</p>
-                <p>Apesar do upload de outros formatos ser possível, não há qualquer processamento
-                    para extrair corretamente o texto desses arquivos.</p>
+                <p>VIRS works better with pure text files (.txt).</p>
+                <p>In spite of VIRS accepting other formats, there is no parsing nor text extraction
+                    from formats such as .pdf and .docx. The text content from these files will not be correctly retrieved.</p>
                 <form id="upload-form" action=upload method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input hidden type="text" name="g-recaptcha-response" id="g-recaptcha-response">
                     <div class="form-group">
-                        <input type="text" class='form-control' name='title' placeholder="Título da coleção">
-                        <input type="text" class='form-control' name='description' placeholder="Descrição">
+                        <input type="text" class='form-control' name='title' placeholder="Collection title">
+                        <input type="text" class='form-control' name='description' placeholder="Description">
                         <input type="file" class="form-control" name="files" multiple>
                     </div>
                     <div class="form-group" style="text-align:center;">
-                        <input type="submit" class="btn btn-primary" value="Criar coleção"></button>
+                        <input type="submit" class="btn btn-primary" value="Create collection"></button>
                     </div>
                 </form>
             </div>
@@ -59,7 +59,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card">
-                <h4>Remover uma coleção</h4>
+                <h4>Delete a collection</h4>
                 <form id='delete-form' action="{% url 'delete_collection' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
@@ -69,7 +69,7 @@
                                 {% if sel_collection == '' %}
                                     selected
                                 {% endif %}
-                                    disabled>Escolha uma coleção</option>
+                                    disabled>Select a collection</option>
 
                                 {% for col in collection_wheel  %}
 
@@ -83,7 +83,7 @@
                             </select>
                         </div>
                         <div class="col-sm-4">
-                            <input type="submit" class="btn btn-danger" value="Remover">
+                            <input type="submit" class="btn btn-danger" value="Delete">
                         </div>
                     </div>
                 </form>
@@ -91,8 +91,8 @@
         </div>
         <div class="col-md-6">
             <div class="card">
-                <h4>Enviar feedback</h4>
-                <a href="mailto:virs@lucaspar.com">Mande uma mensagem</a>
+                <h4>Send feedback</h4>
+                <a href="mailto:virs@lucaspar.com">Send a message</a>
             </div>
         </div>
     </div>
@@ -138,7 +138,7 @@
             el = document.getElementById('collection_deletion');
             selected_label = el.options[el.selectedIndex].innerHTML;
 
-            var confirmed = confirm("Deseja remover a coleção \"" + selected_label + '\"?');
+            var confirmed = confirm("Would you like to delete the collection \"" + selected_label + '\"?');
             if (confirmed) delForm.submit();
 
             return false;
