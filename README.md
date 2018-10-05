@@ -2,79 +2,95 @@ VIRS
 ===
 **_Visualization and Information Retrieval System_**
 
-Construído com o Web Framework Django. Pronto para rodar com Docker.
+Built with Django web framework and Docker.
 
-### Execução
+## Getting started
 
-#### 1. Terminal 1 - executar containers
+##### Shell 1 - run containers
 ```bash
 docker-compose up
 ```
 
-#### 2. Terminal 2 - executar shell interativo
+##### Shell 2 - run interactive shell
 
 ```bash
 docker-compose run web bash
 
-# executar migrações
+# run migrations
 ./manage.py makemigrations
 ./manage.py migrate
 ```
 
-#### 3. Acessar página em localhost:8000
+##### Access localhost:8000
 
-### Outros procedimentos
+---
 
-##### Reiniciar containers
+## Features
 
+#### Start
+![Home page](screenshots/00_home.png)
+
+#### Inverted Index
+![Inverted Index page](screenshots/01_inverted_index.png)
+
+### Vector Space Model representation
+![Vector Space Model page](screenshots/02_vector_space_model.png)
+
+### Collection Search
+![Collection Search page](screenshots/03_search.png)
+
+### PageRank result and visualization
+![PageRank page](screenshots/04_pagerank.png)
+![Collection Search page](screenshots/05_pagerank.png)
+
+
+## Other tasks
+
+##### Finish
+```bash
+docker-compose down
+```
+
+##### Restart containers
 ```bash
 docker-compose down
 docker-compose up
 ```
 
-##### Database wipe
-
+##### Wipe database
 ```bash
 docker-compose down
-mv postgres-data postgres-data.backup
+sudo mv .db/ .db.backup/
 ```
 
-##### Executar migrações
-
+##### Running migrations
 ```bash
-# com os containers rodando, executar:
+# with containers running, open an interactive shell with:
 docker-compose run web bash
+
 ./manage.py makemigrations
 ./manage.py migrate
 ```
 
-##### Finalizar
-
-```bash
-docker-compose down
-```
-
-##### Criar django superuser
-
+##### Create Django superuser
 ```bash
 docker-compose run web bash
 ./manage.py createsuperuser
-# logar como admin em localhost:8000/admin
+# login to admin dashboard at localhost:8000/admin
 ```
 
 ##### Rebuild
-
+If Docker files or image change
 ```bash
 docker-compose down
-sudo mv .db .db.backup
+sudo mv .db/ .db.backup/
 docker-compose build
 docker-compose up
 ```
 
-##### Redefinir permissões para usuário local
-
+##### Set permissions for local user
 ```bash
 pwd
-# confirme 3x que está na raiz do projeto
+# if at this project root, proceed with:
 sudo chown $USER:$USER -R .
 ```
