@@ -29,7 +29,7 @@ docker-compose run web bash
 ## **Implemented Features**
 
 * Upload of custom collection
-* Postings list visualization
+* Inverted Index visualization
 * Vector Space Model representation
 * Search by cosine similarity
 * PageRank scores by iteration step
