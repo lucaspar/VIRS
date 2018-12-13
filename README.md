@@ -4,7 +4,13 @@ description: Visualization and Information Retrieval System
 
 # VIRS
 
-> Refer to [https://github.com/lucaspar/virs](https://github.com/lucaspar/virs)
+>
+
+{% hint style="info" %}
+GitHub: [https://github.com/lucaspar/virs](https://github.com/lucaspar/virs)
+
+GitBook: [https://virs.lucaspar.com](https://virs.lucaspar.com)
+{% endhint %}
 
 ## Getting started
 
