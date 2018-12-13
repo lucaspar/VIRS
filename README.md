@@ -4,8 +4,6 @@ description: Visualization and Information Retrieval System
 
 # VIRS
 
->
-
 {% hint style="info" %}
 GitHub: [https://github.com/lucaspar/virs](https://github.com/lucaspar/virs)
 
